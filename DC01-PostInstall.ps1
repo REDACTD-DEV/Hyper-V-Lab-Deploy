@@ -57,7 +57,7 @@
         GroupCategory = "Security"
         GroupScope = "Global"
         DisplayName = "All-Staff"
-        Path = "OU=SecurityGroups,OU=Groups,$using:Company,$using:DN"
+        Path = "OU=SecurityGroups,OU=Groups,OU=$using:Company,$using:DN"
         Description = "Members of this group are employees of $using:Company"
     }
     New-ADGroup  @Params | Out-Null
