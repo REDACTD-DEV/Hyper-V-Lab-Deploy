@@ -1,5 +1,3 @@
-
-
 #Install DCHP server role
 Write-Host "Install DCHP server role" -ForegroundColor Blue -BackgroundColor Black
 Install-WindowsFeature DHCP -IncludeManagementTools | Out-Null
@@ -12,7 +10,7 @@ Restart-Service dhcpserver | Out-Null
 #Authorize DHCP Server in AD
 Write-Host "Authorize DHCP Server in AD" -ForegroundColor Blue -BackgroundColor Black
 $DNSName = $using:DHCP.Name + "." + $using:Domain
-Add-DhcpServerInDC -DnsName $using:DNSName | Out-Null
+Add-DhcpServerInDC -DnsName $DNSName | Out-Null
 
 #Notify Server Manager that DCHP installation is complete, since it doesn't do this automatically
 Write-Host "Notify Server Manager that DCHP installation is complete, since it doesn't do this automatically" -ForegroundColor Blue -BackgroundColor Black
@@ -33,7 +31,7 @@ Add-DhcpServerv4ExclusionRange -ScopeID $using:NetworkID -StartRange $using:DHCP
 
 #Specify default gateway 
 Write-Host "Specify default gateway " -ForegroundColor Blue -BackgroundColor Black
-Set-DhcpServerv4OptionValue -OptionID 3 -Value $using:GW01.IP -ScopeID $using:DHCPScopeID -ComputerName $using:DNSName | Out-Null
+Set-DhcpServerv4OptionValue -OptionID 3 -Value $using:GW01.IP -ScopeID $using:DHCPScopeID -ComputerName $DNSName | Out-Null
 
 #Specify default DNS server
 Write-Host "Specify default DNS server" -ForegroundColor Blue -BackgroundColor Black

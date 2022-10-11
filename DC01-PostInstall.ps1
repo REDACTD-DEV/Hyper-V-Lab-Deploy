@@ -50,9 +50,20 @@
 
     #Add Company SGs and add members to it
     Write-Host "Add Company SGs and add members to it" -ForegroundColor Blue -BackgroundColor Black
-    New-ADGroup -Name "All-Staff" -SamAccountName "All-Staff" -GroupCategory Security -GroupScope Global -DisplayName "All-Staff" -Path "OU=SecurityGroups,OU=Groups,$using:Company,$using:DN" -Description "Members of this group are employees of $using:Company"  | Out-Null
+
+    $Params = @{
+        Name = "All-Staff"
+        SamAccountName = "All-Staff"
+        GroupCategory = "Security"
+        GroupScope = "Global"
+        DisplayName = "All-Staff"
+        Path = "OU=SecurityGroups,OU=Groups,$using:Company,$using:DN"
+        Description = "Members of this group are employees of $using:Company"
+    }
+    New-ADGroup  @Params | Out-Null
     Add-ADGroupMember -Identity "All-Staff" -Members "John.Smith" | Out-Null
 
     #Add to Cloneable Domain Controllers
     Write-Host "Add to Cloneable Domain Controllers" -ForegroundColor Blue -BackgroundColor Black
-    Add-ADGroupMember -Identity "Cloneable Domain Controllers" -Members "CN="$using:DC01.Name",OU=Domain Controllers,$using:DN" | Out-Null
+    $Members = "CN=" + $using:DC01.Name + ",OU=Domain Controllers," + $using:DN
+    Add-ADGroupMember -Identity "Cloneable Domain Controllers" -Members $Members | Out-Null

@@ -20,7 +20,7 @@ function Wait-VMResponse {
         }
 
         #Wait for $VM to respond to PowerShell Direct
-        Write-Host "Wait for $VMWaitingOn to respond to PowerShell Direct" -ForegroundColor Green -BackgroundColor Black
+        Write-Host "Wait for $VMName to respond to PowerShell Direct" -ForegroundColor Green -BackgroundColor Black
         while ((Invoke-Command -VMName $VMName -Credential $Credential {"Test"} -ea SilentlyContinue) -ne "Test") {
             Write-Host "Still waiting on $VMName..." -ForegroundColor Green -BackgroundColor Black
             Start-Sleep -Seconds 5

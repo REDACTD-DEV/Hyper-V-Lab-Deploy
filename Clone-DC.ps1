@@ -8,7 +8,7 @@ function Clone-DC {
 	)	
     process {
         Write-Host "Ensure $ExistingDCName is up before starting the cloning process" -ForegroundColor Green -BackgroundColor Black
-        Wait-VMResponse -VMName "$ExistingDCName" -CredentialType $DomainCred -LogonUICheck
+        Wait-VMResponse -VMName $ExistingDCName -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
 
         Write-Host "$ExistingDCName cloning to $NewDCName" -ForegroundColor Green -BackgroundColor Black
         Invoke-Command -Credential $domaincred -VMName $ExistingDCName -ScriptBlock{
@@ -93,8 +93,8 @@ function Clone-DC {
         Get-VM $ExistingDCName | Where-Object State -eq "Off" | Rename-VM -NewName $NewDCName | Out-Null
 
         Write-Host "Ensure both domain controllers are up before bringing $NewDCName up" -ForegroundColor Green -BackgroundColor Black
-        Wait-VMResponse -VMName "$ExistingDCName" -CredentialType $DomainCred -LogonUICheck
-        Wait-VMResponse -VMName $DC02.Name -CredentialType $DomainCred -LogonUICheck
+        Wait-VMResponse -VMName "$ExistingDCName"  -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
+        Wait-VMResponse -VMName $DC02.Name  -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
 
         #Start $NewDCName
         Write-Host "Start $NewDCName" -ForegroundColor Green -BackgroundColor Black
