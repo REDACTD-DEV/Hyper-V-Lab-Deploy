@@ -60,6 +60,7 @@ Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-Post
 Wait-VMResponse -VMName $DHCP.Name -CredentialType "Local" -Password $Password
 Write-Host $DHCP.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $DHCP.Name -FilePath ".\DHCP.ps1"
+Start-Sleep -Seconds 10
 Wait-VMResponse -VMName $DHCP.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $DHCP.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-PostInstall.ps1"
@@ -68,6 +69,7 @@ Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-Post
 Wait-VMResponse -VMName $FS01.Name -CredentialType "Local" -Password $Password
 Write-Host $FS01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $FS01.Name -FilePath ".\FS01.ps1"
+Start-Sleep -Seconds 10
 Wait-VMResponse -VMName $FS01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $FS01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $FS01.Name -FilePath ".\FS01-PostInstall.ps1"
@@ -76,6 +78,7 @@ Invoke-Command -Credential $DomainCred -VMName $FS01.Name -FilePath ".\FS01-Post
 Wait-VMResponse -VMName $WEB01.Name -CredentialType "Local" -Password $Password
 Write-Host $WEB01.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $WEB01.Name -FilePath ".\WEB01.ps1"
+Start-Sleep -Seconds 10
 Wait-VMResponse -VMName $WEB01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $WEB01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $WEB01.Name -FilePath ".\WEB01-PostInstall.ps1"
