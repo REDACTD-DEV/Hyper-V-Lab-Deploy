@@ -1,5 +1,3 @@
-. .\Configuration.ps1
-
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding | Out-Null
@@ -13,14 +11,14 @@ foreach ($NetworkAdapter in (Get-NetAdapterAdvancedProperty -DisplayName "Hyper-
 #Set IP Address
 Write-Host "Set IP Address" -ForegroundColor Blue -BackgroundColor Black
 $Params = @{
-    IPAddress = $GW01.IP
-    DefaultGateway = $GW01.IP
-    PrefixLength = $Prefix
+    IPAddress = $using:GW01.IP
+    DefaultGateway = $using:GW01.IP
+    PrefixLength = $using:Prefix
 }
 Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params | Out-Null
 
 #Configure DNS Settings
-Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $DC01.IP | Out-Null  
+Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP | Out-Null  
 
 #Install routing feature
 Write-Host "Install routing feature" -ForegroundColor Blue -BackgroundColor Black
@@ -29,9 +27,9 @@ Install-WindowsFeature Routing -IncludeManagementTools | Out-Null
 #Domain join
 Write-Host "Domain join and restart" -ForegroundColor Blue -BackgroundColor Black
 $Params = @{
-    DomainName = $Domain
-    OUPath = "OU=Servers,OU=Devices,OU=$Company,$DN"
-    Credential = $DomainCred
+    DomainName = $using:Domain
+    OUPath = "OU=Servers,OU=Devices,OU=$using:Company,$using:DN"
+    Credential = $using:DomainCred
     Force = $true
     Restart = $true
 }

@@ -1,5 +1,3 @@
-. .\Configuration.ps1
-
 #Bring data disk online
 Write-Host "Bring data disk online" -ForegroundColor Blue -BackgroundColor Black
 Initialize-Disk -Number 1 | Out-Null
@@ -29,6 +27,6 @@ New-SmbShare @Params | Out-Null
 
 Write-Host "Install and configure DFS Namespace" -ForegroundColor Blue -BackgroundColor Black
 Install-WindowsFeature FS-DFS-Namespace -IncludeManagementTools | Out-Null
-$DFSNTargetPath = "\\" + $FS01.Name + "." + $Domain + "\NetworkShare"
-$DFSNPath = "\\" + $Domain + "\NetworkShare"
+$DFSNTargetPath = "\\" + $using:FS01.Name + "." + $using:Domain + "\NetworkShare"
+$DFSNPath = "\\" + $using:Domain + "\NetworkShare"
 New-DfsnRoot -TargetPath $DFSNTargetPath -Type DomainV2 -Path $DFSNPath | Out-Null

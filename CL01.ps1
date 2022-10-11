@@ -1,5 +1,3 @@
-. .\Configuration.ps1
-
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding | Out-Null
@@ -21,9 +19,9 @@ Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability -Online | Out-
 #Domain join and restart
 Write-Host "Domain join and restart" -ForegroundColor Blue -BackgroundColor Black
 $Params = @{
-    DomainName = $Domain
-    OUPath = "OU=Workstations,OU=Devices,OU=$Company,$DN"
-    Credential = $DomainCred
+    DomainName = $using:Domain
+    OUPath = "OU=Workstations,OU=Devices,OU=$using:Company,$using:DN"
+    Credential = $using:DomainCred
     Force = $true
     Restart = $true
 }

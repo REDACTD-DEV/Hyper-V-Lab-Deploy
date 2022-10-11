@@ -1,5 +1,5 @@
 #Clone $ExistingDCName to $NewDCName
-function Wait-VMResponse {
+function Clone-DC {
 	[CmdletBinding()]
 	param(
 		[Parameter()][String]$ExistingDCName,
@@ -38,8 +38,8 @@ function Wait-VMResponse {
             Static              =   $true
             IPv4Address         =   $NewDCStaticIPAddress
             IPv4SubnetMask      =   $SubnetMask
-            IPv4DefaultGateway  =   $GW01.IP
-            IPv4DNSResolver     =   $DC01.IP
+            IPv4DefaultGateway  =   $using:GW01.IP
+            IPv4DNSResolver     =   $using:DC01.IP
             }
             New-ADDCCloneConfigFile @Params -ea SilentlyContinue | Out-Null
 

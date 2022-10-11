@@ -33,59 +33,68 @@ foreach($VM in $VMConfigs){
     New-CustomVM -VMName $VM.Name -Type $VM.Type | Out-Null
 }
 
+$LocalAdmin = "Administrator"
+$DomainAdmin = $DomainNetBIOSName + "\Administrator"
+$Pass = ConvertTo-SecureString -String $Password -AsPlainText -Force
+$LocalCred = New-Object System.Management.Automation.PSCredential($LocalAdmin, $Pass)
+$DomainCred = New-Object System.Management.Automation.PSCredential($DomainAdmin, $Pass)
+
 #DC01
-Wait-VMResponse -VMWaitingOn $DC01.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $DC01.Name -CredentialType "Local"
 Write-Host "Configure Networking and install AD DS on" $DC01.Name -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -VMName $DC01.Name -Credential $LocalCred -FilePath ".\DC01.ps1"
-Wait-VMResponse -VMWaitingOn $DC01.Name -CredentialType $DomainCred -LogonUICheck
+Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck
 Write-Host $DC01.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\DC01-PostInstall.ps1"
-Wait-VMResponse -VMWaitingOn $DC01.Name -CredentialType $DomainCred -LogonUICheck
+Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck
 
 #GW01
-Wait-VMResponse -VMWaitingOn $GW01.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $GW01.Name -CredentialType "Local"
 Write-Host $GW01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $GW01.Name -FilePath ".\GW01.ps1"
-Wait-VMResponse -VMWaitingOn $GW01.Name -CredentialType $DomainCred
+Wait-VMResponse -VMName $GW01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName
 Write-Host $GW01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-PostInstall.ps1"
 
 #DHCP
-Wait-VMResponse -VMWaitingOn $DHCP.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $DHCP.Name -CredentialType "Local"
 Write-Host $DHCP.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $DHCP.Name -FilePath ".\DHCP.ps1"
-Wait-VMResponse -VMWaitingOn $DHCP.Name -CredentialType $DomainCred
+Wait-VMResponse -VMName $DHCP.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName
 Write-Host $DHCP.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-PostInstall.ps1"
 
 #FS01
-Wait-VMResponse -VMWaitingOn $FS01.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $FS01.Name -CredentialType "Local"
 Write-Host $FS01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $FS01.Name -FilePath ".\FS01.ps1"
-Wait-VMResponse -VMWaitingOn $FS01.Name -CredentialType $DomainCred
+Wait-VMResponse -VMName $FS01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName
 Write-Host $FS01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $FS01.Name -FilePath ".\FS01-PostInstall.ps1"
 
 #WEB01
-Wait-VMResponse -VMWaitingOn $WEB01.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $WEB01.Name -CredentialType "Local"
 Write-Host $WEB01.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $WEB01.Name -FilePath ".\WEB01.ps1"
-Wait-VMResponse -VMWaitingOn $WEB01.Name -CredentialType $DomainCred
+Wait-VMResponse -VMName $WEB01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName
 Write-Host $WEB01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $WEB01.Name -FilePath ".\WEB01-PostInstall.ps1"
 
 #Group Policy script
-Wait-VMResponse -VMWaitingOn $DC01.Name -CredentialType $DomainCred -LogonUICheck
+Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck
 Write-Host "Group Policy script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\GroupPolicy.ps1"
 
 #DC02
-Wait-VMResponse -VMWaitingOn $DC02.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $DC02.Name -CredentialType "Local"
 Write-Host $DC02.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
 
+#DC03
+Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
+
 #CL01
-Wait-VMResponse -VMWaitingOn $CL01.Name -CredentialType $LocalCred
+Wait-VMResponse -VMName $CL01.Name -CredentialType "Local"
 Write-Host $CL01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $CL01.Name -FilePath ".\CL01.ps1"
 

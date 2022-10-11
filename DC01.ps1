@@ -1,5 +1,3 @@
-. .\Configuration.ps1
-
 #Disable IPV6
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding | Out-Null
 
@@ -12,15 +10,15 @@ foreach ($NetworkAdapter in (Get-NetAdapterAdvancedProperty -DisplayName "Hyper-
 #Set IP Address
 Write-Host "Set IP Address" -ForegroundColor Blue -BackgroundColor Black
 $Params = @{
-    IPAddress = $DC01.IP
-    DefaultGateway = $GW01.IP
-    PrefixLength = $Prefix
+    IPAddress = $using:DC01.IP
+    DefaultGateway = $using:GW01.IP
+    PrefixLength = $using:Prefix
 }
 Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params | Out-Null
 
 Write-Host "Set DNS" -ForegroundColor Blue -BackgroundColor Black
 #Configure DNS Settings
-Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $DC01.IP | Out-Null  
+Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP | Out-Null  
 
 #Install AD DS server role
 Write-Host "Install AD DS Server Role" -ForegroundColor Blue -BackgroundColor Black
@@ -28,4 +26,4 @@ Install-WindowsFeature -name AD-Domain-Services -IncludeManagementTools | Out-Nu
 
 #Configure server as a domain controller
 Write-Host "Configure server as a domain controller" -ForegroundColor Blue -BackgroundColor Black
-Install-ADDSForest -DomainName $Domain -DomainNetBIOSName $DomainNetBIOSName -InstallDNS -Force -SafeModeAdministratorPassword (ConvertTo-SecureString "1Password" -AsPlainText -Force) -WarningAction SilentlyContinue | Out-Null
+Install-ADDSForest -DomainName $using:Domain -DomainNetBIOSName $using:DomainNetBIOSName -InstallDNS -Force -SafeModeAdministratorPassword (ConvertTo-SecureString $using:Password -AsPlainText -Force) -WarningAction SilentlyContinue | Out-Null
