@@ -47,15 +47,6 @@ Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $
 Write-Host $DC01.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\DC01-PostInstall.ps1"
 
-#GW01
-Wait-VMResponse -VMName $GW01.Name -CredentialType "Local" -Password $Password
-Write-Host $GW01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $LocalCred -VMName $GW01.Name -FilePath ".\GW01.ps1"
-Start-Sleep -Seconds 10
-Wait-VMResponse -VMName $GW01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
-Write-Host $GW01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-PostInstall.ps1"
-
 #DHCP
 Wait-VMResponse -VMName $DHCP.Name -CredentialType "Local" -Password $Password
 Write-Host $DHCP.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
@@ -64,6 +55,15 @@ Start-Sleep -Seconds 10
 Wait-VMResponse -VMName $DHCP.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $DHCP.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-PostInstall.ps1"
+
+#GW01
+Wait-VMResponse -VMName $GW01.Name -CredentialType "Local" -Password $Password
+Write-Host $GW01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $LocalCred -VMName $GW01.Name -FilePath ".\GW01.ps1"
+Start-Sleep -Seconds 10
+Wait-VMResponse -VMName $GW01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
+Write-Host $GW01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-PostInstall.ps1"
 
 #FS01
 Wait-VMResponse -VMName $FS01.Name -CredentialType "Local" -Password $Password
