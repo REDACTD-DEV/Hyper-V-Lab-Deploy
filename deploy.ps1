@@ -1,43 +1,43 @@
-﻿. .\Configuration.ps1
+. .\Configuration.ps1
 . .\New-ISOFile.ps1
 . .\Create-AutomatedISO.ps1
 . .\New-CustomVM.ps1
 . .\Wait-VMResponse.ps1
 . .\Clone-DC.ps1
 
-Create-AutomatedISO -ISOPath $WinServerISO
-Create-AutomatedISO -ISOPath $WinClientISO
+Create-AutomatedISO -ISOPath $WinServerISO | Out-Null
+Create-AutomatedISO -ISOPath $WinClientISO | Out-Null
 
 #Create folder for autounattend ISO
 Write-Host "Create folder for autounattend ISO" -ForegroundColor Green -BackgroundColor Black
-New-Item -Type Directory -Path "E:\autounattend" 
+New-Item -Type Directory -Path "E:\autounattend"  | Out-Null
 
 #Create base  server-autounattend.xml file
 Write-Host "Copy base server-autounattend.xml file" -ForegroundColor Green -BackgroundColor Black
-Copy-Item -Path ".\server-autounattend.xml" -Destination "E:\autounattend\server-autounattend.xml" 
+Copy-Item -Path ".\server-autounattend.xml" -Destination "E:\autounattend\server-autounattend.xml"  | Out-Null
 
 #Create base client-autounattend.xml file
 Write-Host "Copy base client-autounattend.xml file" -ForegroundColor Green -BackgroundColor Black
-Copy-Item -Path ".\client-autounattend.xml" -Destination "E:\autounattend\client-autounattend.xml" 
+Copy-Item -Path ".\client-autounattend.xml" -Destination "E:\autounattend\client-autounattend.xml"  | Out-Null
 
 #Remove PrivateLabSwitch if it exists
 Write-Host "Remove PrivateLabSwitch if it exists" -ForegroundColor Green -BackgroundColor Black
-Get-VMSwitch | Where-Object Name -eq "PrivateLabSwitch" | Remove-VMSwitch -Force 
+Get-VMSwitch | Where-Object Name -eq "PrivateLabSwitch" | Remove-VMSwitch -Force  | Out-Null
 
 #Create PrivateLabSwitch
 Write-Host "Create PrivateLabSwitch" -ForegroundColor Green -BackgroundColor Black
-New-VMSwitch -Name "PrivateLabSwitch" -SwitchType "Private" 
+New-VMSwitch -Name "PrivateLabSwitch" -SwitchType "Private"  | Out-Null
+
+#This will bring back the first physical network adapter with the default route of 0.0.0.0/0
+$InternetNetAdapter = (Get-NetAdapter | where-Object Name -notmatch "vEthernet" | Where-Object ifindex -eq (Get-NetRoute -DestinationPrefix "0.0.0.0/0" | Select-Object -first 1).ifindex).Name
 
 #Remove ExternalLabSwitch if it exists
 Write-Host "Remove ExternalLabSwitch if it exists" -ForegroundColor Green -BackgroundColor Black
-Get-VMSwitch | Where-Object Name -eq "ExternalLabSwitch" | Remove-VMSwitch -Force 
-
-#This will bring back the network adapter with the default route of 0.0.0.0/0
-$InternetNetAdapter = (Get-NetAdapter | Where-Object ifindex -eq (Get-NetRoute -DestinationPrefix "0.0.0.0/0" | Select-Object -first 1).ifindex).Name
+Get-VMSwitch | Where-Object Name -eq "ExternalLabSwitch" | Remove-VMSwitch -Force  | Out-Null
 
 #Create ExternalLabSwitch
 Write-Host "Create ExternalLabSwitch" -ForegroundColor Green -BackgroundColor Black
-New-VMSwitch -Name "ExternalLabSwitch" -NetAdapterName $InternetNetAdapter -AllowManagementOs $true
+New-VMSwitch -Name "ExternalLabSwitch" -NetAdapterName $InternetNetAdapter -AllowManagementOs $true | Out-Null
 
 foreach($VM in $VMConfigs){
     Write-Host "Deploy" $VM.Name -ForegroundColor Green -BackgroundColor Black
@@ -114,7 +114,7 @@ Start-Sleep -Seconds 30
 Wait-VMResponse -VMName $DC02.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
 
 #DC03
-#Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
+Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
 
 #Configure BitLocker on all VMs
 .\Bitlocker.ps1
