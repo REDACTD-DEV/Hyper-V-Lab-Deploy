@@ -59,25 +59,25 @@ set-GPRegistryValue @Params | Out-Null
 #BitLocker Group Policy Configuration
 Write-Host "Creating BitLocker GPO" -ForegroundColor Blue -BackgroundColor Black
 $gpoOuObj=new-gpo -name "BitLocker"
-new-gplink -Guid $gpoOuObj.Id.Guid -target $using:DN
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "ActiveDirectoryBackup" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "ActiveDirectoryInfoToStore" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSActiveDirectoryBackup" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSActiveDirectoryInfoToStore" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSEncryptionType" -Value 2
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSHideRecoveryPage" -Value 0
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSManageDRA" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRecovery" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRecoveryKey" -Value 2
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRecoveryPassword" -Value 2
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRequireActiveDirectoryBackup" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "RequireActiveDirectoryBackup" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVActiveDirectoryBackup" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVActiveDirectoryInfoToStore" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVEncryptionType" -Value 2
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVHideRecoveryPage" -Value 0
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVManageDRA" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRecovery" -Value 1
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRecoveryKey" -Value 2
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRecoveryPassword" -Value 2
-set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRequireActiveDirectoryBackup" -Value 1
+new-gplink -Guid $gpoOuObj.Id.Guid -target $using:DN | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "ActiveDirectoryBackup" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "ActiveDirectoryInfoToStore" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSActiveDirectoryBackup" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSActiveDirectoryInfoToStore" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSEncryptionType" -Value 2 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSHideRecoveryPage" -Value 0 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSManageDRA" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRecovery" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRecoveryKey" -Value 2 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRecoveryPassword" -Value 2 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "OSRequireActiveDirectoryBackup" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "RequireActiveDirectoryBackup" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVActiveDirectoryBackup" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVActiveDirectoryInfoToStore" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVEncryptionType" -Value 2 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVHideRecoveryPage" -Value 0 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVManageDRA" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRecovery" -Value 1 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRecoveryKey" -Value 2 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRecoveryPassword" -Value 2 | Out-Null
+set-GPRegistryValue -Name BitLocker -Key "HKLM\Software\Policies\Microsoft\FVE" -Type "DWORD" -ValueName "FDVRequireActiveDirectoryBackup" -Value 1 | Out-Null
