@@ -41,20 +41,12 @@ $DomainCred = New-Object System.Management.Automation.PSCredential($DomainAdmin,
 
 #DC01
 Wait-VMResponse -VMName $DC01.Name -CredentialType "Local" -Password $Password
-Write-Host "Configure Networking and install AD DS on" $DC01.Name -ForegroundColor Green -BackgroundColor Black
+Write-Host "Networking and domain creation" $DC01.Name -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -VMName $DC01.Name -Credential $LocalCred -FilePath ".\DC01.ps1"
 Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
-Write-Host $DC01.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
+Write-Host $DC01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\DC01-PostInstall.ps1"
-
-#DHCP
-Wait-VMResponse -VMName $DHCP.Name -CredentialType "Local" -Password $Password
-Write-Host $DHCP.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $LocalCred -VMName $DHCP.Name -FilePath ".\DHCP.ps1"
-Start-Sleep -Seconds 10
-Wait-VMResponse -VMName $DHCP.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
-Write-Host $DHCP.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-PostInstall.ps1"
+Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
 
 #GW01
 Wait-VMResponse -VMName $GW01.Name -CredentialType "Local" -Password $Password
@@ -64,6 +56,15 @@ Start-Sleep -Seconds 10
 Wait-VMResponse -VMName $GW01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $GW01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-PostInstall.ps1"
+
+#DHCP
+Wait-VMResponse -VMName $DHCP.Name -CredentialType "Local" -Password $Password
+Write-Host $DHCP.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $LocalCred -VMName $DHCP.Name -FilePath ".\DHCP.ps1"
+Start-Sleep -Seconds 10
+Wait-VMResponse -VMName $DHCP.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
+Write-Host $DHCP.Name "post-install" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-PostInstall.ps1"
 
 #FS01
 Wait-VMResponse -VMName $FS01.Name -CredentialType "Local" -Password $Password
@@ -76,7 +77,7 @@ Invoke-Command -Credential $DomainCred -VMName $FS01.Name -FilePath ".\FS01-Post
 
 #WEB01
 Wait-VMResponse -VMName $WEB01.Name -CredentialType "Local" -Password $Password
-Write-Host $WEB01.Name "postinstall script" -ForegroundColor Green -BackgroundColor Black
+Write-Host $WEB01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $WEB01.Name -FilePath ".\WEB01.ps1"
 Start-Sleep -Seconds 10
 Wait-VMResponse -VMName $WEB01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
@@ -84,9 +85,14 @@ Write-Host $WEB01.Name "post-install" -ForegroundColor Green -BackgroundColor Bl
 Invoke-Command -Credential $DomainCred -VMName $WEB01.Name -FilePath ".\WEB01-PostInstall.ps1"
 
 #Group Policy script
-Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
+Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host "Group Policy script" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\GroupPolicy.ps1"
+
+#CL01
+Wait-VMResponse -VMName $CL01.Name -CredentialType "Local" -Password $Password
+Write-Host $CL01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $LocalCred -VMName $CL01.Name -FilePath ".\CL01.ps1"
 
 #DC02
 Wait-VMResponse -VMName $DC02.Name -CredentialType "Local" -Password $Password
@@ -95,11 +101,6 @@ Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
 
 #DC03
 Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
-
-#CL01
-Wait-VMResponse -VMName $CL01.Name -CredentialType "Local" -Password $Password
-Write-Host $CL01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $LocalCred -VMName $CL01.Name -FilePath ".\CL01.ps1"
 
 #Configure BitLocker on all VMs
 .\Bitlocker.ps1

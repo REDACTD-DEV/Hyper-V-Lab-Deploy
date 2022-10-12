@@ -1,8 +1,8 @@
 function New-CustomVM {
 	[CmdletBinding()]
 	param(
-		[Parameter()][String]$VMName,
-        [Parameter()][String]$Type
+		[Parameter(Mandatory=$true)][String]$VMName,
+        [Parameter(Mandatory=$true)][String]$Type
 	)	
     process {
         #Create New VM

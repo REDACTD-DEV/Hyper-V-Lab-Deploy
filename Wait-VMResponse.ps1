@@ -1,10 +1,10 @@
 function Wait-VMResponse {
 	[CmdletBinding()]
 	param(
-        [Parameter()][String]$VMName,
-        [Parameter()][String]$CredentialType,
+        [Parameter(Mandatory=$true)][String]$VMName,
+        [Parameter(Mandatory=$true)][String]$CredentialType,
+        [Parameter(Mandatory=$true)][String]$Password,
         [Parameter()][String]$DomainNetBIOSName,
-        [Parameter()][String]$Password,
         [Parameter()][Switch]$LogonUICheck
 	)	
     process {
@@ -31,9 +31,9 @@ function Wait-VMResponse {
             Invoke-Command -VMName $VMName -Credential $Credential -ScriptBlock {
             while ($null -ne (Get-Process | Where-Object ProcessName -eq "LogonUI")) {
                 Start-Sleep 5
-                Write-Host "$VMName LogonUI still processing..." -ForegroundColor Green -BackgroundColor Black
+                Write-Host $Using:VMName "LogonUI still processing..." -ForegroundColor Green -BackgroundColor Black
             }
-            Write-host "LogonUI is down! $VMName is good to go!" -ForegroundColor Green -BackgroundColor Black
+            Write-host "LogonUI is down!" $using:VMName "is good to go!" -ForegroundColor Green -BackgroundColor Black
             }
         }
     }

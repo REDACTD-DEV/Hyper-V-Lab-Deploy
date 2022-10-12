@@ -2,27 +2,27 @@
 function Clone-DC {
 	[CmdletBinding()]
 	param(
-		[Parameter()][String]$ExistingDCName,
-        [Parameter()][String]$NewDCName,
-        [Parameter()][String]$NewDCStaticIPAddress
+		[Parameter(Mandatory=$true)][String]$ExistingDCName,
+        [Parameter(Mandatory=$true)][String]$NewDCName,
+        [Parameter(Mandatory=$true)][String]$NewDCStaticIPAddress
 	)	
     process {
-        Write-Host "Ensure $ExistingDCName is up before starting the cloning process" -ForegroundColor Green -BackgroundColor Black
+        Write-Host "Ensure" $ExistingDCName "is up before starting the cloning process" -ForegroundColor Green -BackgroundColor Black
         Wait-VMResponse -VMName $ExistingDCName -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
 
-        Write-Host "$ExistingDCName cloning to $NewDCName" -ForegroundColor Green -BackgroundColor Black
+        Write-Host $ExistingDCName "cloning to" $NewDCName -ForegroundColor Green -BackgroundColor Black
         Invoke-Command -Credential $domaincred -VMName $ExistingDCName -ScriptBlock{
             #Force a domain sync
             Write-Host "Force a domain sync" -ForegroundColor Blue -BackgroundColor Black
             repadmin /syncall /AdeP | out-null
 
             #Wait for $ExistingDCName to show up in the Cloneable Domain Controllers group on $ExistingDCName
-            Write-Host "Wait for $ExistingDCName to show up in the Cloneable Domain Controllers group on $ExistingDCName" -ForegroundColor Green -BackgroundColor Black
-            while ((Get-ADGroupMember -Server "$ExistingDCName" -Identity "Cloneable Domain Controllers").name -NotMatch "$ExistingDCName") {
+            Write-Host "Wait for" $using:ExistingDCName "to show up in the Cloneable Domain Controllers group on" $using:ExistingDCName -ForegroundColor Green -BackgroundColor Black
+            while ((Get-ADGroupMember -Server $using:ExistingDCName -Identity "Cloneable Domain Controllers").name -NotMatch $using:ExistingDCName) {
                 Write-Host "Still waiting..." -ForegroundColor Blue -BackgroundColor Black
                 Start-Sleep -Seconds 5
             } 
-            Write-Host "$ExistingDCName found in Cloneable Domain Controllers on $ExistingDCName, moving on" -ForegroundColor Blue -BackgroundColor Black
+            Write-Host $using:ExistingDCName "found in Cloneable Domain Controllers on" $using:ExistingDCName -ForegroundColor Blue -BackgroundColor Black
             Start-Sleep 5
 
             #List of applications that won't be cloned
@@ -34,10 +34,10 @@ function Clone-DC {
             #Create clone config file
             Write-Host "Create clone config file" -ForegroundColor Blue -BackgroundColor Black
             $Params = @{
-            CloneComputerName   =   $NewDCName
+            CloneComputerName   =   $using:NewDCName
             Static              =   $true
-            IPv4Address         =   $NewDCStaticIPAddress
-            IPv4SubnetMask      =   $SubnetMask
+            IPv4Address         =   $using:NewDCStaticIPAddress
+            IPv4SubnetMask      =   $using:SubnetMask
             IPv4DefaultGateway  =   $using:GW01.IP
             IPv4DNSResolver     =   $using:DC01.IP
             }
@@ -51,28 +51,28 @@ function Clone-DC {
             }
 
             #Shutdown $ExistingDCName
-            Write-Host "Shutdown $ExistingDCName" -ForegroundColor Blue -BackgroundColor Black
+            Write-Host "Shutdown" $using:ExistingDCName -ForegroundColor Blue -BackgroundColor Black
             Stop-Computer -Force | Out-Null
         }
 
         #Check $ExistingDCName is shutdown
-        while ((Get-VM "$ExistingDCName").State -ne "Off") {
-            Write-Host "Waiting for $ExistingDCName to shutdown..." -ForegroundColor Green -BackgroundColor Black
+        while ((Get-VM $ExistingDCName).State -ne "Off") {
+            Write-Host "Waiting for" $ExistingDCName "to shutdown..." -ForegroundColor Green -BackgroundColor Black
             Start-Sleep -Seconds 2
         }
-        Write-Host "$ExistingDCName is down, moving on" -ForegroundColor Green -BackgroundColor Black
+        Write-Host $ExistingDCName "is down, moving on" -ForegroundColor Green -BackgroundColor Black
 
         #Export VM
         Write-Host "Export VM" -ForegroundColor Green -BackgroundColor Black
-        Export-VM -Name "$ExistingDCName" -Path E:\Export | Out-Null
+        Export-VM -Name $ExistingDCName -Path E:\Export | Out-Null
 
         #Start $ExistingDCName
         Write-Host "Start $ExistingDCName" -ForegroundColor Green -BackgroundColor Black
         Start-VM -Name "$ExistingDCName" | Out-Null
 
         #New directory for $NewDCName
-        Write-Host "New directory for $NewDCName" -ForegroundColor Green -BackgroundColor Black
-        $guid = (Get-VM "$ExistingDCName").vmid.guid.ToUpper()
+        Write-Host "New directory for" $NewDCName -ForegroundColor Green -BackgroundColor Black
+        $guid = (Get-VM $ExistingDCName).vmid.guid.ToUpper()
         New-Item -Type Directory -Path "E:\$NewDCName" | Out-Null
 
         #Import $ExistingDCName
@@ -89,16 +89,16 @@ function Clone-DC {
         Import-VM @Params | Out-Null
 
         #Rename $ExistingDCName to $NewDCName
-        Write-Host "Rename $ExistingDCName to $NewDCName" -ForegroundColor Green -BackgroundColor Black
+        Write-Host "Rename" $ExistingDCName "to" $NewDCName -ForegroundColor Green -BackgroundColor Black
         Get-VM $ExistingDCName | Where-Object State -eq "Off" | Rename-VM -NewName $NewDCName | Out-Null
 
-        Write-Host "Ensure both domain controllers are up before bringing $NewDCName up" -ForegroundColor Green -BackgroundColor Black
-        Wait-VMResponse -VMName "$ExistingDCName"  -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
+        Write-Host "Ensure both domain controllers are up before bringing" $NewDCName "up" -ForegroundColor Green -BackgroundColor Black
+        Wait-VMResponse -VMName $ExistingDCName  -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
         Wait-VMResponse -VMName $DC02.Name  -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
 
         #Start $NewDCName
-        Write-Host "Start $NewDCName" -ForegroundColor Green -BackgroundColor Black
-        Start-VM -Name "$NewDCName" | Out-Null
+        Write-Host "Start" $NewDCName -ForegroundColor Green -BackgroundColor Black
+        Start-VM -Name $NewDCName | Out-Null
 
         #Cleanup export folder
         Write-Host "Cleanup export folder" -ForegroundColor Green -BackgroundColor Black

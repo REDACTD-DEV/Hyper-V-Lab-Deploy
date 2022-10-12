@@ -1,7 +1,7 @@
 function Create-AutomatedISO {
 	[CmdletBinding()]
 	param(
-		[Parameter()][String]$ISOPath
+		[Parameter(Mandatory=$true)][String]$ISOPath
 	)	
     process {
         Write-Host "Working on $ISOPath" -ForegroundColor Green -BackgroundColor Black

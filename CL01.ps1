@@ -18,6 +18,7 @@ Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability -Online | Out-
 
 #Domain join and restart
 Write-Host "Domain join and restart" -ForegroundColor Blue -BackgroundColor Black
+ping $using:DC01.Name
 $Params = @{
     DomainName = $using:Domain
     OUPath = "OU=Workstations,OU=Devices,OU=$using:Company,$using:DN"
