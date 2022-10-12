@@ -1,69 +1,38 @@
+#Install DCHP server role
+Write-Host "Install DCHP server role" -ForegroundColor Blue -BackgroundColor Black
+Install-WindowsFeature DHCP -IncludeManagementTools  | Out-Null
 
-    
-    Write-Host "Set DNS Forwarder to $using:DNSForwarder" -ForegroundColor Blue -BackgroundColor Black
-    Set-DnsServerForwarder -IPAddress $using:DNSForwarder -PassThru | Out-Null
-    #Create OU's
-    Write-Host "Create OU's" -ForegroundColor Blue -BackgroundColor Black
-    #Base OU
-    New-ADOrganizationalUnit -Name $using:Company -Path $using:DN | Out-Null
-    #Devices
-    New-ADOrganizationalUnit -Name "Devices" -Path "OU=$using:Company,$using:DN" | Out-Null
-    New-ADOrganizationalUnit -Name "Servers" -Path "OU=Devices,OU=$using:Company,$using:DN" | Out-Null
-    New-ADOrganizationalUnit -Name "Workstations" -Path "OU=Devices,OU=$using:Company,$using:DN" | Out-Null
-    #Users
-    New-ADOrganizationalUnit -Name "Users" -Path "OU=$using:Company,$using:DN" | Out-Null
-    New-ADOrganizationalUnit -Name "Admins" -Path "OU=Users,OU=$using:Company,$using:DN" | Out-Null
-    New-ADOrganizationalUnit -Name "Employees" -Path "OU=Users,OU=$using:Company,$using:DN" | Out-Null
-    #Groups
-    New-ADOrganizationalUnit -Name "Groups" -Path "OU=$using:Company,$using:DN" | Out-Null
-    New-ADOrganizationalUnit -Name "SecurityGroups" -Path "OU=Groups,OU=$using:Company,$using:DN" | Out-Null
-    New-ADOrganizationalUnit -Name "DistributionLists" -Path "OU=Groups,OU=$using:Company,$using:DN" | Out-Null
-    #New admin user
-    Write-Host "New admin user" -ForegroundColor Blue -BackgroundColor Black
-    $Params = @{
-        Name = "Admin-John.Smith"
-        AccountPassword = (ConvertTo-SecureString $using:Password -AsPlainText -Force)
-        Enabled = $true
-        ChangePasswordAtLogon = $true
-        DisplayName = "John Smith - Admin"
-        Path = "OU=Admins,OU=Users,OU=$using:Company,$using:DN"
-    }
-    New-ADUser @Params | Out-Null
-    #Add admin to Domain Admins group
-    Add-ADGroupMember -Identity "Domain Admins" -Members "Admin-John.Smith" | Out-Null
+#Add required DHCP security groups on server and restart service
+Write-Host "Add required DHCP security groups on server and restart service" -ForegroundColor Blue -BackgroundColor Black
+netsh dhcp add securitygroups  | Out-Null
+Restart-Service dhcpserver  | Out-Null
 
-    #New domain user
-    Write-Host "New domain user" -ForegroundColor Blue -BackgroundColor Black
-    $Params = @{
-        Name = "John.Smith"
-        AccountPassword = (ConvertTo-SecureString $using:Password -AsPlainText -Force)
-        Enabled = $true
-        ChangePasswordAtLogon = $true
-        DisplayName = "John Smith"
-        Company = "$using:Company"
-        Department = "Information Technology"
-        Path = "OU=Employees,OU=Users,OU=$using:Company,$using:DN"
-    }
-    New-ADUser @Params | Out-Null
-    #Will have issues logging in through Hyper-V Enhanced Session Mode if not in this group
-    Add-ADGroupMember -Identity "Remote Desktop Users" -Members "John.Smith" | Out-Null
+#Authorize DHCP Server in AD
+Write-Host "Authorize DHCP Server in AD" -ForegroundColor Blue -BackgroundColor Black
+$DNSName = $using:DHCP.Name + "." + $using:Domain
+Add-DhcpServerInDC -DnsName $DNSName  | Out-Null
 
-    #Add Company SGs and add members to it
-    Write-Host "Add Company SGs and add members to it" -ForegroundColor Blue -BackgroundColor Black
+#Notify Server Manager that DCHP installation is complete, since it doesn't do this automatically
+Write-Host "Notify Server Manager that DCHP installation is complete, since it doesn't do this automatically" -ForegroundColor Blue -BackgroundColor Black
+$Params = @{
+    Path = "registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\ServerManager\Roles\12"
+    Name = "ConfigurationState"
+    Value = "2"
+}
+Set-ItemProperty @Params  | Out-Null
 
-    $Params = @{
-        Name = "All-Staff"
-        SamAccountName = "All-Staff"
-        GroupCategory = "Security"
-        GroupScope = "Global"
-        DisplayName = "All-Staff"
-        Path = "OU=SecurityGroups,OU=Groups,OU=$using:Company,$using:DN"
-        Description = "Members of this group are employees of $using:Company"
-    }
-    New-ADGroup  @Params | Out-Null
-    Add-ADGroupMember -Identity "All-Staff" -Members "John.Smith" | Out-Null
+#Configure DHCP Scope
+Write-Host "Configure DHCP Scope" -ForegroundColor Blue -BackgroundColor Black
+Add-DhcpServerv4Scope -name "Corpnet" -StartRange $using:DHCPStartRange -EndRange $using:DHCPEndRange -SubnetMask $using:SubnetMask -State Active 
 
-    #Add to Cloneable Domain Controllers
-    Write-Host "Add to Cloneable Domain Controllers" -ForegroundColor Blue -BackgroundColor Black
-    $Members = "CN=" + $using:DC01.Name + ",OU=Domain Controllers," + $using:DN
-    Add-ADGroupMember -Identity "Cloneable Domain Controllers" -Members $Members | Out-Null
+#Exclude address range
+Write-Host "Exclude address range" -ForegroundColor Blue -BackgroundColor Black
+Add-DhcpServerv4ExclusionRange -ScopeID $using:NetworkID -StartRange $using:DHCPExcludeStart -EndRange $using:DHCPExcludeEnd 
+
+#Specify default gateway 
+Write-Host "Specify default gateway " -ForegroundColor Blue -BackgroundColor Black
+Set-DhcpServerv4OptionValue -OptionID 3 -Value $using:GW01.IP -ScopeID $using:DHCPScopeID -ComputerName $DNSName 
+
+#Specify default DNS server
+Write-Host "Specify default DNS server" -ForegroundColor Blue -BackgroundColor Black
+Set-DhcpServerv4OptionValue -DnsDomain $using:Domain -DnsServer $using:DC01.IP 
