@@ -54,6 +54,7 @@ $DomainCred = New-Object System.Management.Automation.PSCredential($DomainAdmin,
 Wait-VMResponse -VMName $DC01.Name -CredentialType "Local" -Password $Password
 Write-Host "Networking and domain creation" $DC01.Name -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -VMName $DC01.Name -Credential $LocalCred -FilePath ".\DC01.ps1"
+Start-Sleep -Seconds 30 #PSDirect will jump into a VM that's shutting down if we don't sleep between scripts
 Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
 Write-Host $DC01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\DC01-PostInstall.ps1"
@@ -63,7 +64,7 @@ Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $
 Wait-VMResponse -VMName $GW01.Name -CredentialType "Local" -Password $Password
 Write-Host $GW01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $GW01.Name -FilePath ".\GW01.ps1"
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 30 #PSDirect will jump into a VM that's shutting down if we don't sleep between scripts
 Wait-VMResponse -VMName $GW01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $GW01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-PostInstall.ps1"
@@ -72,7 +73,7 @@ Invoke-Command -Credential $DomainCred -VMName $GW01.Name -FilePath ".\GW01-Post
 Wait-VMResponse -VMName $DHCP.Name -CredentialType "Local" -Password $Password
 Write-Host $DHCP.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $DHCP.Name -FilePath ".\DHCP.ps1"
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 30 #PSDirect will jump into a VM that's shutting down if we don't sleep between scripts
 Wait-VMResponse -VMName $DHCP.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $DHCP.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-PostInstall.ps1"
@@ -81,7 +82,7 @@ Invoke-Command -Credential $DomainCred -VMName $DHCP.Name -FilePath ".\DHCP-Post
 Wait-VMResponse -VMName $FS01.Name -CredentialType "Local" -Password $Password
 Write-Host $FS01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $FS01.Name -FilePath ".\FS01.ps1"
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 30 #PSDirect will jump into a VM that's shutting down if we don't sleep between scripts
 Wait-VMResponse -VMName $FS01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $FS01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $FS01.Name -FilePath ".\FS01-PostInstall.ps1"
@@ -90,7 +91,7 @@ Invoke-Command -Credential $DomainCred -VMName $FS01.Name -FilePath ".\FS01-Post
 Wait-VMResponse -VMName $WEB01.Name -CredentialType "Local" -Password $Password
 Write-Host $WEB01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $WEB01.Name -FilePath ".\WEB01.ps1"
-Start-Sleep -Seconds 10
+Start-Sleep -Seconds 30 #PSDirect will jump into a VM that's shutting down if we don't sleep between scripts
 Wait-VMResponse -VMName $WEB01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
 Write-Host $WEB01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $WEB01.Name -FilePath ".\WEB01-PostInstall.ps1"

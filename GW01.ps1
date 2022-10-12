@@ -5,12 +5,14 @@ Start-Sleep -Seconds 30
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding 
+Start-Sleep -Seconds 1
 
 #Rename network adapter inside VM
 Write-Host "Rename network adapter inside VM" -ForegroundColor Blue -BackgroundColor Black
 foreach ($NetworkAdapter in (Get-NetAdapterAdvancedProperty -DisplayName "Hyper-V Network Adapter Name" | Where-Object DisplayValue -NotLike "")) {
     $NetworkAdapter | Rename-NetAdapter -NewName $NetworkAdapter.DisplayValue -Verbose
 } 
+Start-Sleep -Seconds 1
 
 #Set IP Address
 Write-Host "Set IP Address" -ForegroundColor Blue -BackgroundColor Black
@@ -19,14 +21,17 @@ $Params = @{
     DefaultGateway = $using:GW01.IP
     PrefixLength = $using:Prefix
 }
-Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params 
+Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params
+Start-Sleep -Seconds 1
 
 #Configure DNS Settings
-Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP   
+Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP  
+Start-Sleep -Seconds 1 
 
 #Install routing feature
 Write-Host "Install routing feature" -ForegroundColor Blue -BackgroundColor Black
 Install-WindowsFeature Routing -IncludeManagementTools 
+Start-Sleep -Seconds 1
 
 #Domain join
 $DomainAdmin = $DomainNetBIOSName + "\Administrator"

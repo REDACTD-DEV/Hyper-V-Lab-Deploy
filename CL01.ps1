@@ -16,10 +16,10 @@ Write-Host "Get a new DHCP lease" -ForegroundColor Blue -BackgroundColor Black
 ipconfig /release | Out-Null
 ipconfig /renew | Out-Null
 
+Start-Sleep -Seconds 3
+
 #Install RSAT
 Write-Host "Install RSAT" -ForegroundColor Blue -BackgroundColor Black
-Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name UseWUServer -Value 0
-Restart-Service -Name wuauserv -Force
 Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability -Online | Out-Null
 
 #Domain join and restart

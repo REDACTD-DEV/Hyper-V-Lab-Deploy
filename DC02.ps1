@@ -21,6 +21,8 @@ Write-Host "Set DNS" -ForegroundColor Blue -BackgroundColor Black
 #Configure DNS Settings
 Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP | Out-Null  
 
+Start-Sleep -Seconds 3
+
 #Install AD DS server role
 Write-Host "Install AD DS Server Role" -ForegroundColor Blue -BackgroundColor Black
 Install-WindowsFeature -name AD-Domain-Services -IncludeManagementTools | Out-Null

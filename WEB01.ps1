@@ -24,6 +24,8 @@ Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params | Out-Null
 #Configure DNS Settings
 Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP | Out-Null  
 
+Start-Sleep -Seconds 3
+
 #Domain join
 $DomainAdmin = $DomainNetBIOSName + "\Administrator"
 $Pass = ConvertTo-SecureString -String $using:Password -AsPlainText -Force
