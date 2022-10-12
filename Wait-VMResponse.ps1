@@ -26,7 +26,10 @@ function Wait-VMResponse {
             Start-Sleep -Seconds 5
         }
         Write-Host "$VMName is up!" -ForegroundColor Green -BackgroundColor Black
-
+        
+        #For Domain Controllers, waiting for PSDirect is not a reliable method to check if the VM is ready.
+        #This checks if LogonUI.exe is missing (In this case LogonUI will normally show "Applying Computer Settings")
+        #If LogonUI.exe is missing, the VM has successfully logged in
         if ($LogonUICheck) {
             Invoke-Command -VMName $VMName -Credential $Credential -ScriptBlock {
             while ($null -ne (Get-Process | Where-Object ProcessName -eq "LogonUI")) {

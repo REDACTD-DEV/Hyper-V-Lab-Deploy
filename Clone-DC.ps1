@@ -14,7 +14,7 @@ function Clone-DC {
         Invoke-Command -Credential $domaincred -VMName $ExistingDCName -ScriptBlock{
             #Force a domain sync
             Write-Host "Force a domain sync" -ForegroundColor Blue -BackgroundColor Black
-            repadmin /syncall /AdeP | out-null
+            repadmin /syncall /AdeP 
 
             #Wait for $ExistingDCName to show up in the Cloneable Domain Controllers group on $ExistingDCName
             Write-Host "Wait for" $using:ExistingDCName "to show up in the Cloneable Domain Controllers group on" $using:ExistingDCName -ForegroundColor Green -BackgroundColor Black
@@ -28,7 +28,7 @@ function Clone-DC {
             #List of applications that won't be cloned
             Write-Host "List of applications that won't be cloned" -ForegroundColor Blue -BackgroundColor Black
             Start-Sleep -Seconds 2
-            Get-ADDCCloningExcludedApplicationList -GenerateXML | Out-Null
+            Get-ADDCCloningExcludedApplicationList -GenerateXML 
             Start-Sleep 5
 
             #Create clone config file
@@ -41,18 +41,18 @@ function Clone-DC {
             IPv4DefaultGateway  =   $using:GW01.IP
             IPv4DNSResolver     =   $using:DC01.IP
             }
-            New-ADDCCloneConfigFile @Params -ea SilentlyContinue | Out-Null
+            New-ADDCCloneConfigFile @Params -ea SilentlyContinue 
 
             #Check the config file was created
             while ((Test-Path -Path C:\Windows\NTDS\DCCloneConfig.xml) -eq $false) {
                 Write-Host "Config file not created, trying again..." -ForegroundColor Blue -BackgroundColor Black
-                New-ADDCCloneConfigFile @Params -ea SilentlyContinue | Out-Null
+                New-ADDCCloneConfigFile @Params -ea SilentlyContinue 
                 Start-Sleep 5
             }
 
             #Shutdown $ExistingDCName
             Write-Host "Shutdown" $using:ExistingDCName -ForegroundColor Blue -BackgroundColor Black
-            Stop-Computer -Force | Out-Null
+            Stop-Computer -Force 
         }
 
         #Check $ExistingDCName is shutdown
@@ -64,16 +64,16 @@ function Clone-DC {
 
         #Export VM
         Write-Host "Export VM" -ForegroundColor Green -BackgroundColor Black
-        Export-VM -Name $ExistingDCName -Path E:\Export | Out-Null
+        Export-VM -Name $ExistingDCName -Path E:\Export 
 
         #Start $ExistingDCName
         Write-Host "Start $ExistingDCName" -ForegroundColor Green -BackgroundColor Black
-        Start-VM -Name "$ExistingDCName" | Out-Null
+        Start-VM -Name "$ExistingDCName" 
 
         #New directory for $NewDCName
         Write-Host "New directory for" $NewDCName -ForegroundColor Green -BackgroundColor Black
         $guid = (Get-VM $ExistingDCName).vmid.guid.ToUpper()
-        New-Item -Type Directory -Path "E:\$NewDCName" | Out-Null
+        New-Item -Type Directory -Path "E:\$NewDCName" 
 
         #Import $ExistingDCName
         Write-Host "Import $ExistingDCName" -ForegroundColor Green -BackgroundColor Black
@@ -86,11 +86,11 @@ function Clone-DC {
             Copy                =   $true
             GenerateNewId       =   $true
         }
-        Import-VM @Params | Out-Null
+        Import-VM @Params 
 
         #Rename $ExistingDCName to $NewDCName
         Write-Host "Rename" $ExistingDCName "to" $NewDCName -ForegroundColor Green -BackgroundColor Black
-        Get-VM $ExistingDCName | Where-Object State -eq "Off" | Rename-VM -NewName $NewDCName | Out-Null
+        Get-VM $ExistingDCName | Where-Object State -eq "Off" | Rename-VM -NewName $NewDCName 
 
         Write-Host "Ensure both domain controllers are up before bringing" $NewDCName "up" -ForegroundColor Green -BackgroundColor Black
         Wait-VMResponse -VMName $ExistingDCName  -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password -LogonUICheck
@@ -98,10 +98,10 @@ function Clone-DC {
 
         #Start $NewDCName
         Write-Host "Start" $NewDCName -ForegroundColor Green -BackgroundColor Black
-        Start-VM -Name $NewDCName | Out-Null
+        Start-VM -Name $NewDCName 
 
         #Cleanup export folder
         Write-Host "Cleanup export folder" -ForegroundColor Green -BackgroundColor Black
-        Remove-Item -Recurse E:\Export\ | Out-Null
+        Remove-Item -Recurse E:\Export\ 
     }
 }

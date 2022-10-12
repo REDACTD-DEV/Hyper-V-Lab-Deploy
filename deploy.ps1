@@ -10,27 +10,35 @@ Create-AutomatedISO -ISOPath $WinClientISO
 
 #Create folder for autounattend ISO
 Write-Host "Create folder for autounattend ISO" -ForegroundColor Green -BackgroundColor Black
-New-Item -Type Directory -Path "E:\autounattend" | Out-Null
+New-Item -Type Directory -Path "E:\autounattend" 
 
 #Create base  server-autounattend.xml file
 Write-Host "Copy base server-autounattend.xml file" -ForegroundColor Green -BackgroundColor Black
-Copy-Item -Path ".\server-autounattend.xml" -Destination "E:\autounattend\server-autounattend.xml" | Out-Null
+Copy-Item -Path ".\server-autounattend.xml" -Destination "E:\autounattend\server-autounattend.xml" 
 
 #Create base client-autounattend.xml file
 Write-Host "Copy base client-autounattend.xml file" -ForegroundColor Green -BackgroundColor Black
-Copy-Item -Path ".\client-autounattend.xml" -Destination "E:\autounattend\client-autounattend.xml" | Out-Null
+Copy-Item -Path ".\client-autounattend.xml" -Destination "E:\autounattend\client-autounattend.xml" 
 
-#Remove vSwitch if it exists
-Write-Host "Removing old vSwitch" -ForegroundColor Green -BackgroundColor Black
-Get-VMSwitch | Where-Object Name -eq "PrivateLabSwitch" | Remove-VMSwitch -Force | Out-Null
+#Remove PrivateLabSwitch if it exists
+Write-Host "Remove PrivateLabSwitch if it exists" -ForegroundColor Green -BackgroundColor Black
+Get-VMSwitch | Where-Object Name -eq "PrivateLabSwitch" | Remove-VMSwitch -Force 
 
-#Create vSwitch
-Write-Host "Adding new vSwitch" -ForegroundColor Green -BackgroundColor Black
-New-VMSwitch -Name "PrivateLabSwitch" -SwitchType "Private" | Out-Null
+#Create PrivateLabSwitch
+Write-Host "Create PrivateLabSwitch" -ForegroundColor Green -BackgroundColor Black
+New-VMSwitch -Name "PrivateLabSwitch" -SwitchType "Private" 
+
+#Remove ExternalLabSwitch if it exists
+Write-Host "Remove ExternalLabSwitch if it exists" -ForegroundColor Green -BackgroundColor Black
+Get-VMSwitch | Where-Object Name -eq "ExternalLabSwitch" | Remove-VMSwitch -Force 
+
+#Create ExternalLabSwitch
+Write-Host "Create ExternalLabSwitch" -ForegroundColor Green -BackgroundColor Black
+New-VMSwitch -Name "ExternalLabSwitch" -SwitchType "Private" 
 
 foreach($VM in $VMConfigs){
     Write-Host "Deploy" $VM.Name -ForegroundColor Green -BackgroundColor Black
-    New-CustomVM -VMName $VM.Name -Type $VM.Type | Out-Null
+    New-CustomVM -VMName $VM.Name -Type $VM.Type 
 }
 
 $LocalAdmin = "Administrator"
@@ -47,6 +55,14 @@ Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $
 Write-Host $DC01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\DC01-PostInstall.ps1"
 Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
+
+#DC02
+Wait-VMResponse -VMName $DC02.Name -CredentialType "Local" -Password $Password
+Write-Host $DC02.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
+
+#DC03
+Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
 
 #GW01
 Wait-VMResponse -VMName $GW01.Name -CredentialType "Local" -Password $Password
@@ -93,14 +109,6 @@ Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\GroupPoli
 Wait-VMResponse -VMName $CL01.Name -CredentialType "Local" -Password $Password
 Write-Host $CL01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $CL01.Name -FilePath ".\CL01.ps1"
-
-#DC02
-Wait-VMResponse -VMName $DC02.Name -CredentialType "Local" -Password $Password
-Write-Host $DC02.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
-
-#DC03
-Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
 
 #Configure BitLocker on all VMs
 .\Bitlocker.ps1
