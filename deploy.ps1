@@ -32,9 +32,12 @@ New-VMSwitch -Name "PrivateLabSwitch" -SwitchType "Private"
 Write-Host "Remove ExternalLabSwitch if it exists" -ForegroundColor Green -BackgroundColor Black
 Get-VMSwitch | Where-Object Name -eq "ExternalLabSwitch" | Remove-VMSwitch -Force 
 
+#This will bring back the network adapter with the default route of 0.0.0.0/0
+$InternetNetAdapter = (Get-NetAdapter | Where-Object ifindex -eq (Get-NetRoute -DestinationPrefix "0.0.0.0/0" | Select-Object -first 1).ifindex).Name
+
 #Create ExternalLabSwitch
 Write-Host "Create ExternalLabSwitch" -ForegroundColor Green -BackgroundColor Black
-New-VMSwitch -Name "ExternalLabSwitch" -SwitchType "Private" 
+New-VMSwitch -Name "ExternalLabSwitch" -NetAdapterName $InternetNetAdapter -AllowManagementOs $true
 
 foreach($VM in $VMConfigs){
     Write-Host "Deploy" $VM.Name -ForegroundColor Green -BackgroundColor Black
@@ -55,14 +58,6 @@ Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $
 Write-Host $DC01.Name "post-install" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\DC01-PostInstall.ps1"
 Wait-VMResponse -VMName $DC01.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
-
-#DC02
-Wait-VMResponse -VMName $DC02.Name -CredentialType "Local" -Password $Password
-Write-Host $DC02.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
-Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
-
-#DC03
-Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
 
 #GW01
 Wait-VMResponse -VMName $GW01.Name -CredentialType "Local" -Password $Password
@@ -109,6 +104,16 @@ Invoke-Command -Credential $DomainCred -VMName $DC01.Name -FilePath ".\GroupPoli
 Wait-VMResponse -VMName $CL01.Name -CredentialType "Local" -Password $Password
 Write-Host $CL01.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
 Invoke-Command -Credential $LocalCred -VMName $CL01.Name -FilePath ".\CL01.ps1"
+
+#DC02
+Wait-VMResponse -VMName $DC02.Name -CredentialType "Local" -Password $Password
+Write-Host $DC02.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
+Start-Sleep -Seconds 30
+Wait-VMResponse -VMName $DC02.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
+
+#DC03
+#Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
 
 #Configure BitLocker on all VMs
 .\Bitlocker.ps1

@@ -1,3 +1,7 @@
+#Even though we can PSRemote in, the VM is still booting. 
+#This script runs too quick and won't join the domain unless we sleep it for a bit
+Start-Sleep -Seconds 30
+
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding | Out-Null
@@ -14,11 +18,12 @@ ipconfig /renew | Out-Null
 
 #Install RSAT
 Write-Host "Install RSAT" -ForegroundColor Blue -BackgroundColor Black
+Set-ItemProperty -Path HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU -Name UseWUServer -Value 0
+Restart-Service -Name wuauserv -Force
 Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability -Online | Out-Null
 
 #Domain join and restart
 Write-Host "Domain join and restart" -ForegroundColor Blue -BackgroundColor Black
-ping $using:DC01.Name
 $Params = @{
     DomainName = $using:Domain
     OUPath = "OU=Workstations,OU=Devices,OU=$using:Company,$using:DN"

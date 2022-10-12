@@ -1,3 +1,7 @@
+#Even though we can PSRemote in, the VM is still booting. 
+#This script runs too quick and won't join the domain unless we sleep it for a bit
+Start-Sleep -Seconds 30
+
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding 
@@ -29,7 +33,6 @@ $DomainAdmin = $DomainNetBIOSName + "\Administrator"
 $Pass = ConvertTo-SecureString -String $using:Password -AsPlainText -Force
 $DomainCred = New-Object System.Management.Automation.PSCredential($DomainAdmin, $Pass)
 Write-Host "Domain join and restart" -ForegroundColor Blue -BackgroundColor Black
-ping $using:DC01.Name
 $Params = @{
     DomainName = $using:Domain
     OUPath = "OU=Servers,OU=Devices,OU=$using:Company,$using:DN"
@@ -37,4 +40,4 @@ $Params = @{
     Force = $true
     Restart = $true
 }
-Add-Computer @Params 
+Add-Computer @Params | Out-Null
