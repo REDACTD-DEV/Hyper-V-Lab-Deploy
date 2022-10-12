@@ -4,7 +4,7 @@ Start-Sleep -Seconds 30
 
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
-Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding 
+Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding  | Out-Null
 
 #Rename network adapter inside VM
 Write-Host "Rename network adapter inside VM" -ForegroundColor Blue -BackgroundColor Black
@@ -19,10 +19,10 @@ $Params = @{
     DefaultGateway = $using:GW01.IP
     PrefixLength = $using:Prefix
 }
-Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params 
+Get-NetAdapter -Name "Internal" | New-NetIPAddress @Params  | Out-Null
 
 #Configure DNS Settings
-Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP   
+Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP    | Out-Null
 
 Start-Sleep -Seconds 3
 
@@ -38,4 +38,4 @@ $Params = @{
     Force = $true
     Restart = $true
 }
-Add-Computer @Params | Out-Null
+Add-Computer @Params | Out-Null 
