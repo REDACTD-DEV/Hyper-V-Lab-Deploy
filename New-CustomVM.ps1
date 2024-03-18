@@ -5,6 +5,11 @@ function New-CustomVM {
         [Parameter(Mandatory=$true)][String]$Type
 	)	
     process {
+        #Create Folder Structures
+        New-Item -ItemType Directory $VMConfigFolder\$VMName | Out-Null
+        New-Item -ItemType Directory "$VMConfigFolder\$VMName\Hard Disks" | Out-Null
+        New-Item -ItemType Directory "$VMConfigFolder\$VMName\autounattend" | Out-Null
+
         #Create New VM
         Write-Host "Running New-VM for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
@@ -70,45 +75,44 @@ function New-CustomVM {
         Write-Host "Setting Install ISO for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
             VMName = $VMName
-            Path = "E:\ISO\WINSERVER-22-Auto.iso"
         }
-        if($VMName -eq "CL01") {$Params['Path'] = "E:\ISO\Windows-auto.iso"}
-        if($VMName -eq "pfSense") {$Params['Path'] = "E:\ISO\pfSense.iso"}
+        if ($Type -eq "Client") {$Params['Path'] = $WinClientISOPath}
+        if ($Type -eq "Server") {$Params['Path'] = $WinServerISOPath}
         Add-VMDvdDrive @Params | Out-Null
 
         #Copy autounattend.xml to VM Folder
-        New-Item -ItemType Directory E:\$VMName\autounattend\ | Out-Null
+        New-Item -ItemType Directory $VMConfigFolder\$VMName | Out-Null
         Write-Host "Copying autounattend.xml for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         if ($Type -eq "Client") {
-            Copy-Item -Path "E:\autounattend\client-autounattend.xml" -Destination E:\$VMName\autounattend\autounattend.xml | Out-Null
+            Copy-Item -Path "$UnattendFilePath\client-autounattend.xml" -Destination "$VMConfigFolder\$VMName\autounattend\autounattend.xml" | Out-Null
         }
         if ($Type -eq "Server") {
-            Copy-Item -Path "E:\autounattend\server-autounattend.xml" -Destination E:\$VMName\autounattend\autounattend.xml | Out-Null
+            Copy-Item -Path "$UnattendFilePath\server-autounattend.xml" -Destination "$VMConfigFolder\$VMName\autounattend\autounattend.xml" | Out-Null
         }
 
         #Customize autounattend.xml for each VM
         Write-Host "Customizing autounattend.xml for $VMName" -ForegroundColor Magenta -BackgroundColor Black
-        (Get-Content "E:\$VMName\autounattend\autounattend.xml").replace("1ComputerName", $VMName) | Set-Content "E:\$VMName\autounattend\autounattend.xml" | Out-Null
+        (Get-Content "$VMConfigFolder\$VMName\autounattend\autounattend.xml").replace("1ComputerName", $VMName) | Set-Content "$VMConfigFolder\$VMName\autounattend\autounattend.xml" | Out-Null
 
         #Create the ISO
         Write-Host "Creating autounattend ISO for $VMName" -ForegroundColor Magenta -BackgroundColor Black
-        New-ISOFile -source "E:\$VMName\autounattend\" -destinationIso "E:\$VMName\autounattend.iso" -title autounattend | Out-Null
+        New-ISOFile -source $VMConfigFolder\$VMName\autounattend -destinationIso $VMConfigFolder\$VMName\autounattend.iso -title autounattend | Out-Null
 
         #Cleanup
-        Remove-Item -Recurse -Path "E:\$VMName\autounattend\" | Out-Null
+        Remove-Item -Recurse -Path "$VMConfigFolder\$VMName\autounattend\" | Out-Null
 
         #Add autounattend ISO
         Write-Host "Attaching autounattend ISO to $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
             VMName = $VMName
-            Path = "E:\$VMName\autounattend.iso"
+            Path = $VMConfigFolder\$VMName\autounattend.iso
         }
         Add-VMDvdDrive @Params | Out-Null
 
         #Create OS Drive
         Write-Host "Create OS disk for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
-            Path = "E:\$VMName\Virtual Hard Disks\$VMName-OS.vhdx"
+            Path = "$VMConfigFolder\$VMName\Hard Disks\$VMName-OS.vhdx"
             SizeBytes = 100GB
             Dynamic = $true
         }
@@ -117,7 +121,7 @@ function New-CustomVM {
         #Create Data Drive
         Write-Host "Create data disk for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
-            Path = "E:\$VMName\Virtual Hard Disks\$VMName-Data.vhdx"
+            Path = "$VMConfigFolder\$VMName\Hard Disks\$VMName-Data.vhdx"
             SizeBytes = 500GB
             Dynamic = $true
         }
@@ -127,7 +131,7 @@ function New-CustomVM {
         Write-Host "Attach OS disk for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
             VMName = $VMName
-            Path = "E:\$VMName\Virtual Hard Disks\$VMName-OS.vhdx"
+            Path = "$VMConfigFolder\$VMName\Hard Disks\$VMName-OS.vhdx"
         }
         Add-VMHardDiskDrive @Params | Out-Null
 
@@ -135,7 +139,7 @@ function New-CustomVM {
         Write-Host "Attach data disk for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
             VMName = $VMName
-            Path = "E:\$VMName\Virtual Hard Disks\$VMName-Data.vhdx"
+            Path = "$VMConfigFolder\$VMName\Hard Disks\$VMName-Data.vhdx"
         }
         Add-VMHardDiskDrive @Params | Out-Null
 

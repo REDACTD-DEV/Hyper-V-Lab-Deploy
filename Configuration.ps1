@@ -1,6 +1,12 @@
 #ISO Locations
-$WinServerISO = "E:\ISO\WINSERVER-22.iso"
-$WinClientISO = "E:\ISO\Windows.iso"
+$WinServerISOPath = "E:\ISO\WINSERVER-22.iso"
+$WinClientISOPath = "E:\ISO\Windows.iso"
+
+#Hyper-V Location
+$VMConfigFolder = "C:\Users\Administrator\Documents\Hyper-V"
+
+#Unattend Location
+$UnattendFilePath = "C:\Users\Administrator\Downloads"
 
 #Active Directory Settings
 $Company = "Contoso"
