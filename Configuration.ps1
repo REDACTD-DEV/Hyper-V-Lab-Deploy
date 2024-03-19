@@ -3,7 +3,7 @@ $WinServerISOPath = "C:\Users\Administrator\Downloads\WINSERVER.iso"
 $WinClientISOPath = "C:\Users\Administrator\Downloads\Windows.iso"
 
 #Hyper-V Location
-$VMConfigFolder = "C:\Users\Administrator\Documents\Hyper-V"
+$VMConfigFolder = "C:\ProgramData\Microsoft\Windows\Hyper-V"
 
 #Unattend Location
 $UnattendFilePath = "C:\Users\Administrator\Downloads\Hyper-V-Lab-Deploy-main\Hyper-V-Lab-Deploy-main"

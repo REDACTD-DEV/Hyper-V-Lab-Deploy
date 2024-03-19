@@ -15,7 +15,7 @@ function New-CustomVM {
         $Params = @{
             Name = $VMName
             MemoryStartupBytes = 2GB
-            Path = "E:\$VMName"
+            Path = "$VMConfigFolder\$VMName"
             Generation = 2
         }
         New-VM @Params | Out-Null
