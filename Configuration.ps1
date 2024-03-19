@@ -8,6 +8,9 @@ $VMConfigFolder = "C:\Users\Administrator\Documents\Hyper-V"
 #Unattend Location
 $UnattendFilePath = "C:\Users\Administrator\Downloads\Hyper-V-Lab-Deploy-main\Hyper-V-Lab-Deploy-main"
 
+#ISO Build Location
+$ISOBuildPath = "C:\Users\Administrator\Downloads\Hyper-V-Lab-Deploy-main\Hyper-V-Lab-Deploy-main"
+
 #Active Directory Settings
 $Company = "Contoso"
 $Domain = "ad.contoso.com"

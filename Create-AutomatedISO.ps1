@@ -9,7 +9,7 @@ function Create-AutomatedISO {
         $AutoISODirectory = (Get-Item -Path $ISOPath).DirectoryName + "\" 
         $AutoISOFileName = (Get-Item -Path $ISOPath).basename + "-auto.iso"
         $AutoISOFullPath = $AutoISODirectory + $AutoISOFileName 
-        $BuildPath = "C:\Users\Administrator\Downloads\Hyper-V-Lab-Deploy-main\Hyper-V-Lab-Deploy-main\" + (Get-Item -Path $ISOPath).basename + "ISOBuild"
+        $BuildPath = "$ISOBuildPath\" + (Get-Item -Path $ISOPath).basename + "ISOBuild"
 
         #Test if an automated ISO already exists
         if ((Test-Path $AutoISOFullPath) -eq $true){
