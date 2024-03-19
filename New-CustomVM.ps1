@@ -105,7 +105,7 @@ function New-CustomVM {
         Write-Host "Attaching autounattend ISO to $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Params = @{
             VMName = $VMName
-            Path = $VMConfigFolder\$VMName\autounattend.iso
+            Path = "$VMConfigFolder\$VMName\autounattend.iso"
         }
         Add-VMDvdDrive @Params | Out-Null
 
