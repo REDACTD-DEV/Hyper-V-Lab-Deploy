@@ -1,6 +1,6 @@
 #ISO Locations
-$WinServerISOPath = "E:\ISO\WINSERVER-22.iso"
-$WinClientISOPath = "E:\ISO\Windows.iso"
+$WinServerISOPath = "C:\Users\Administrator\Downloads\WINSERVER-22.iso"
+$WinClientISOPath = "C:\Users\Administrator\Downloads\Windows.iso"
 
 #Hyper-V Location
 $VMConfigFolder = "C:\Users\Administrator\Documents\Hyper-V"
