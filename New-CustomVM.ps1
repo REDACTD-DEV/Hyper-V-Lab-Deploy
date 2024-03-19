@@ -81,7 +81,6 @@ function New-CustomVM {
         Add-VMDvdDrive @Params | Out-Null
 
         #Copy autounattend.xml to VM Folder
-        New-Item -ItemType Directory $VMConfigFolder\$VMName | Out-Null
         Write-Host "Copying autounattend.xml for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         if ($Type -eq "Client") {
             Copy-Item -Path "$UnattendFilePath\client-autounattend.xml" -Destination "$VMConfigFolder\$VMName\autounattend\autounattend.xml" | Out-Null
@@ -146,8 +145,8 @@ function New-CustomVM {
         #Set boot priority
         Write-Host "Set boot priority for $VMName" -ForegroundColor Magenta -BackgroundColor Black
         $Order1 = Get-VMDvdDrive -VMName $VMName | Where-Object Path  -NotMatch "unattend"
-        $Order2 = Get-VMHardDiskDrive -VMName $VMName | Where-Object Path -Match "OS"
-        $Order3 = Get-VMHardDiskDrive -VMName $VMName | Where-Object Path -Match "Data"
+        $Order2 = Get-VMHardDiskDrive -VMName $VMName | Where-Object Path -Match "OS.vhdx"
+        $Order3 = Get-VMHardDiskDrive -VMName $VMName | Where-Object Path -Match "Data.vhdx"
         $Order4 = Get-VMDvdDrive -VMName $VMName | Where-Object Path  -Match "unattend"
         Set-VMFirmware -VMName $VMName -BootOrder $Order1, $Order2, $Order3, $Order4 | Out-Null
         
