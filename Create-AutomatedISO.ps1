@@ -27,7 +27,7 @@ function Create-AutomatedISO {
             Copy-Item -Path $Path* -Destination $BuildPath -Recurse | Out-Null
 
             #Create WinServer ISO
-            Write-Host "Create WinServer ISO" -ForegroundColor Green -BackgroundColor Black
+            Write-Host "Create ISO" -ForegroundColor Green -BackgroundColor Black
             New-ISOFile -source $BuildPath -destinationISO $AutoISOFullPath -bootfile "$BuildPath\efi\microsoft\boot\efisys_noprompt.bin" -title "WINSERVER-22-Auto" | Out-Null
 
             #Cleanup

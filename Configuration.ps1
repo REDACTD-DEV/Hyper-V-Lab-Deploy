@@ -2,6 +2,10 @@
 $WinServerISOPath = "C:\Users\Administrator\Downloads\WINSERVER.iso"
 $WinClientISOPath = "C:\Users\Administrator\Downloads\Windows.iso"
 
+#AutoISO Locations
+$WinServerAutoISOPath = "C:\Users\Administrator\Downloads\WINSERVER-auto.iso"
+$WinClientAutoISOPath = "C:\Users\Administrator\Downloads\Windows-auto.iso"
+
 #Hyper-V Location
 $VMConfigFolder = "C:\ProgramData\Microsoft\Windows\Hyper-V"
 

@@ -76,8 +76,8 @@ function New-CustomVM {
         $Params = @{
             VMName = $VMName
         }
-        if ($Type -eq "Client") {$Params['Path'] = $WinClientISOPath}
-        if ($Type -eq "Server") {$Params['Path'] = $WinServerISOPath}
+        if ($Type -eq "Client") {$Params['Path'] = $WinClientAutoISOPath}
+        if ($Type -eq "Server") {$Params['Path'] = $WinServerAutoISOPath}
         Add-VMDvdDrive @Params | Out-Null
 
         #Copy autounattend.xml to VM Folder
