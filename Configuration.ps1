@@ -1,5 +1,5 @@
 #ISO Locations
-$WinServerISOPath = "C:\Users\Administrator\Downloads\WINSERVER-22.iso"
+$WinServerISOPath = "C:\Users\Administrator\Downloads\WINSERVER.iso"
 $WinClientISOPath = "C:\Users\Administrator\Downloads\Windows.iso"
 
 #Hyper-V Location
