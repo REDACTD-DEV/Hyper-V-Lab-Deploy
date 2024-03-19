@@ -7,6 +7,9 @@ Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding  | Out-Null
 Start-Sleep -Seconds 1
 
+#Adjust firewall to allow pinging other hosts
+netsh advfirewall firewall add rule name="Allow ICMPv4" protocol=icmpv4:8,any dir=in action=allow
+
 #Rename network adapter inside VM
 Write-Host "Rename network adapter inside VM" -ForegroundColor Blue -BackgroundColor Black
 foreach ($NetworkAdapter in (Get-NetAdapterAdvancedProperty -DisplayName "Hyper-V Network Adapter Name" | Where-Object DisplayValue -NotLike "")) {
