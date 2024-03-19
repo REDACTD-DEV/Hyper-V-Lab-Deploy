@@ -5,20 +5,20 @@
 . .\Wait-VMResponse.ps1
 . .\Clone-DC.ps1
 
-Create-AutomatedISO -ISOPath $WinServerISO | Out-Null
-Create-AutomatedISO -ISOPath $WinClientISO | Out-Null
+Create-AutomatedISO -ISOPath $WinServerISOPath | Out-Null
+Create-AutomatedISO -ISOPath $WinClientISOPath | Out-Null
 
 #Create folder for autounattend ISO
 Write-Host "Create folder for autounattend ISO" -ForegroundColor Green -BackgroundColor Black
-New-Item -Type Directory -Path "E:\autounattend"  | Out-Null
+New-Item -Type Directory -Path "$UnattendFilePath\autounattend"  | Out-Null
 
 #Create base  server-autounattend.xml file
 Write-Host "Copy base server-autounattend.xml file" -ForegroundColor Green -BackgroundColor Black
-Copy-Item -Path ".\server-autounattend.xml" -Destination "E:\autounattend\server-autounattend.xml"  | Out-Null
+Copy-Item -Path ".\server-autounattend.xml" -Destination "$UnattendFilePath\autounattend\server-autounattend.xml"  | Out-Null
 
 #Create base client-autounattend.xml file
 Write-Host "Copy base client-autounattend.xml file" -ForegroundColor Green -BackgroundColor Black
-Copy-Item -Path ".\client-autounattend.xml" -Destination "E:\autounattend\client-autounattend.xml"  | Out-Null
+Copy-Item -Path ".\client-autounattend.xml" -Destination "$UnattendFilePath\autounattend\client-autounattend.xml"  | Out-Null
 
 #Remove PrivateLabSwitch if it exists
 Write-Host "Remove PrivateLabSwitch if it exists" -ForegroundColor Green -BackgroundColor Black
