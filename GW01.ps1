@@ -2,6 +2,13 @@
 #This script runs too quick and won't join the domain unless we sleep it for a bit
 Start-Sleep -Seconds 30
 
+#Rename network adapter inside VM
+Write-Host "Rename network adapter inside VM" -ForegroundColor Blue -BackgroundColor Black
+foreach ($NetworkAdapter in (Get-NetAdapterAdvancedProperty -DisplayName "Hyper-V Network Adapter Name" | Where-Object DisplayValue -NotLike "")) {
+    $NetworkAdapter | Rename-NetAdapter -NewName $NetworkAdapter.DisplayValue -Verbose
+} 
+Start-Sleep -Seconds 1
+
 #Disable IPV6
 Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding  | Out-Null
@@ -18,13 +25,6 @@ Set-NetRoute -InterfaceAlias "External" -RouteMetric 1
 #Adjust firewall to allow pinging other hosts
 Write-Host "Adjust firewall to allow pinging other hosts" -ForegroundColor Blue -BackgroundColor Black
 netsh advfirewall firewall add rule name="Allow ICMPv4" protocol=icmpv4:8,any dir=in action=allow
-
-#Rename network adapter inside VM
-Write-Host "Rename network adapter inside VM" -ForegroundColor Blue -BackgroundColor Black
-foreach ($NetworkAdapter in (Get-NetAdapterAdvancedProperty -DisplayName "Hyper-V Network Adapter Name" | Where-Object DisplayValue -NotLike "")) {
-    $NetworkAdapter | Rename-NetAdapter -NewName $NetworkAdapter.DisplayValue -Verbose
-} 
-Start-Sleep -Seconds 1
 
 #Set IP Address
 Write-Host "Set IP Address" -ForegroundColor Blue -BackgroundColor Black
