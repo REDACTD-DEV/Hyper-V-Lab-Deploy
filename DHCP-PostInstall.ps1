@@ -39,4 +39,4 @@ Set-DhcpServerv4OptionValue -OptionID 15 -Value $using:Domain -ScopeID $using:DH
 
 #Specify default DNS server
 Write-Host "Specify default DNS server" -ForegroundColor Blue -BackgroundColor Black
-Set-DhcpServerv4OptionValue -DnsDomain $using:Domain -DnsServer $using:DC01.IP
+Set-DhcpServerv4OptionValue -DnsDomain $using:Domain -DnsServer $using:DC01.IP,"1.1.1.1"

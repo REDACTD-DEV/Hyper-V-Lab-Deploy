@@ -1,6 +1,10 @@
+#Sleep
+Write-Host "Sleeping for 60 seconds, maybe this will allow Install-RemoteAccess to not error out" -ForegroundColor Blue -BackgroundColor Black
+Start-Sleep -Seconds 60
+
 #Install remote access
 Write-Host "Install remote access" -ForegroundColor Blue -BackgroundColor Black
-Install-RemoteAccess -VpnType RoutingOnly  | Out-Null
+Install-RemoteAccess -VpnType RoutingOnly
 
 #Configure remote access
 Write-Host "Configure remote access" -ForegroundColor Blue -BackgroundColor Black
