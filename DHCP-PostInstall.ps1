@@ -33,6 +33,10 @@ Add-DhcpServerv4ExclusionRange -ScopeID $using:NetworkID -StartRange $using:DHCP
 Write-Host "Specify default gateway " -ForegroundColor Blue -BackgroundColor Black
 Set-DhcpServerv4OptionValue -OptionID 3 -Value $using:GW01.IP -ScopeID $using:DHCPScopeID -ComputerName $DNSName 
 
+#Specify DNS suffix 
+Write-Host "Specify DNS suffix " -ForegroundColor Blue -BackgroundColor Black
+Set-DhcpServerv4OptionValue -OptionID 15 -Value $using:Domain -ScopeID $using:DHCPScopeID -ComputerName $DNSName 
+
 #Specify default DNS server
 Write-Host "Specify default DNS server" -ForegroundColor Blue -BackgroundColor Black
 Set-DhcpServerv4OptionValue -DnsDomain $using:Domain -DnsServer $using:DC01.IP

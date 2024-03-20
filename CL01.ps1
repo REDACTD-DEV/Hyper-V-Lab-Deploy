@@ -19,6 +19,9 @@ Write-Host "Get a new DHCP lease" -ForegroundColor Blue -BackgroundColor Black
 ipconfig /release | Out-Null
 ipconfig /renew | Out-Null
 
+#Configure DNS Settings
+Get-NetAdapter -Name "Internal" | Set-DNSClientServerAddress -ServerAddresses $using:DC01.IP    | Out-Null
+
 Start-Sleep -Seconds 3
 
 #Install .NET 3.5 as it's a pre-req for RSAT
