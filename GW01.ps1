@@ -15,8 +15,14 @@ Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAd
 Start-Sleep -Seconds 1
 
 #Set static IP
-Write-Host "Set static IP" -ForegroundColor Blue -BackgroundColor Black
-New-NetIPAddress -InterfaceAlias "External" -IPAddress 10.138.42.88 -DefaultGateway 10.138.42.1 -PrefixLength 24
+Write-Host "Set static IP for External NIC" -ForegroundColor Blue -BackgroundColor Black
+$Params = @{
+    IPAddress = "10.138.42.88"
+    DefaultGateway = "10.138.42.1"
+    PrefixLength = "24"
+}
+Get-NetAdapter -Name "External" | New-NetIPAddress @Params | Out-Null
+Start-Sleep -Seconds 1
 
 #Set routing metric
 Write-Host "Set routing metric" -ForegroundColor Blue -BackgroundColor Black
@@ -27,7 +33,7 @@ Write-Host "Adjust firewall to allow pinging other hosts" -ForegroundColor Blue 
 netsh advfirewall firewall add rule name="Allow ICMPv4" protocol=icmpv4:8,any dir=in action=allow
 
 #Set IP Address
-Write-Host "Set IP Address" -ForegroundColor Blue -BackgroundColor Black
+Write-Host "Set IP Address for Internal NIC" -ForegroundColor Blue -BackgroundColor Black
 $Params = @{
     IPAddress = $using:GW01.IP
     DefaultGateway = $using:GW01.IP
