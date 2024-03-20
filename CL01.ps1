@@ -21,6 +21,10 @@ ipconfig /renew | Out-Null
 
 Start-Sleep -Seconds 3
 
+#Install .NET 3.5 as it's a pre-req for RSAT
+Write-Host "Install .NET 3.5 from install DVD" -ForegroundColor Blue -BackgroundColor Black
+dism.exe /online /enable-feature /featurename:NetFX3 /source:D:\sources\sxs /LimitAccess
+
 #Install RSAT
 Write-Host "Install RSAT" -ForegroundColor Blue -BackgroundColor Black
 Get-WindowsCapability -Name RSAT* -Online | Add-WindowsCapability -Online | Out-Null

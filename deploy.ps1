@@ -114,7 +114,7 @@ Start-Sleep -Seconds 30
 Wait-VMResponse -VMName $DC02.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
 
 #DC03
-Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
+#Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
 
 #Configure BitLocker on all VMs
 .\Bitlocker.ps1

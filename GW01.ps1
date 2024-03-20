@@ -7,7 +7,16 @@ Write-Host "Disable IPV6" -ForegroundColor Blue -BackgroundColor Black
 Get-NetAdapterBinding | Where-Object ComponentID -eq 'ms_tcpip6' | Disable-NetAdapterBinding  | Out-Null
 Start-Sleep -Seconds 1
 
+#Set static IP
+Write-Host "Set static IP" -ForegroundColor Blue -BackgroundColor Black
+New-NetIPAddress -InterfaceAlias "External" -IPAddress 10.138.42.88 -DefaultGateway 10.138.42.1 -PrefixLength 24
+
+#Set routing metric
+Write-Host "Set routing metric" -ForegroundColor Blue -BackgroundColor Black
+Set-NetRoute -InterfaceAlias "External" -RouteMetric 1
+
 #Adjust firewall to allow pinging other hosts
+Write-Host "Adjust firewall to allow pinging other hosts" -ForegroundColor Blue -BackgroundColor Black
 netsh advfirewall firewall add rule name="Allow ICMPv4" protocol=icmpv4:8,any dir=in action=allow
 
 #Rename network adapter inside VM
