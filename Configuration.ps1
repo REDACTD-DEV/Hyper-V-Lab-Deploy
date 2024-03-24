@@ -43,5 +43,6 @@ $DC03  = [PSCustomObject]@{Name = "DC03" ; Type = "Server"; IP= "192.168.10.12"}
 $DHCP  = [PSCustomObject]@{Name = "DHCP" ; Type = "Server"; IP= "192.168.10.13"}
 $FS01  = [PSCustomObject]@{Name = "FS01" ; Type = "Server"; IP= "192.168.10.14"}
 $WEB01 = [PSCustomObject]@{Name = "WEB01"; Type = "Server"; IP= "192.168.10.15"}
+$WEB01 = [PSCustomObject]@{Name = "WSUS" ; Type = "Server"; IP= "192.168.10.16"}
 $CL01  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.50"}
-$VMConfigs = @($GW01, $DC01, $DC02, $DHCP, $FS01, $WEB01, $CL01) #DC03 left out as it's cloned from DC01
+$VMConfigs = @($GW01, $DC01, $DC02, $DHCP, $FS01, $WEB01, $CL01, $WSUS) #DC03 left out as it's cloned from DC01

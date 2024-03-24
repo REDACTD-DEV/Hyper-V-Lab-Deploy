@@ -1,13 +1,16 @@
+Start-Sleep -Seconds 10
 #Bring data disk online
 Write-Host "Bring data disk online" -ForegroundColor Blue -BackgroundColor Black
 Initialize-Disk -Number 1 | Out-Null
+Start-Sleep -Seconds 10
 #Partition and format
 Write-Host "Partition and format" -ForegroundColor Blue -BackgroundColor Black
 New-Partition -DiskNumber 1 -UseMaximumSize | Format-Volume -FileSystem "NTFS" -NewFileSystemLabel "Data" | Out-Null
-#Set drive letter 
+
+Start-Sleep -Seconds 10#Set drive letter 
 Write-Host "Set drive letter" -ForegroundColor Blue -BackgroundColor Black
 Set-Partition -DiskNumber 1 -PartitionNumber 2 -NewDriveLetter F | Out-Null
-
+Start-Sleep -Seconds 10
 
 Write-Host "Install FS Feature" -ForegroundColor Blue -BackgroundColor Black
 Install-WindowsFeature FS-FileServer  | Out-Null
