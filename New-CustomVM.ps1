@@ -141,6 +141,19 @@ function New-CustomVM {
             Path = "$VMConfigFolder\$VMName\Hard Disks\$VMName-Data.vhdx"
         }
         Add-VMHardDiskDrive @Params | Out-Null
+        
+        #WSUS Pre-reqs ISO
+        if ($Name -eq "WSUS") {
+            Copy-Item -Path $UnattendFilePath -Destination "$VMConfigFolder\$VMName\WSUS.iso" -Force | Out-Null
+            #Attach WSUS ISO to VM
+            Write-Host "Attaching autounattend ISO to $VMName" -ForegroundColor Magenta -BackgroundColor Black
+            $Params = @{
+                VMName = $VMName
+                Path = "$VMConfigFolder\$VMName\WSUS.iso"
+            }
+            Add-VMDvdDrive @Params | Out-Null
+
+        }
 
         #Set boot priority
         Write-Host "Set boot priority for $VMName" -ForegroundColor Magenta -BackgroundColor Black

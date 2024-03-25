@@ -113,8 +113,14 @@ Invoke-Command -Credential $LocalCred -VMName $DC02.Name -FilePath ".\DC02.ps1"
 Start-Sleep -Seconds 30
 Wait-VMResponse -VMName $DC02.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -LogonUICheck -Password $Password
 
-#DC03
-#Clone-DC -ExistingDCName $DC01.Name -NewDCName $DC03.Name -NewDCStaticIPAddress $DC03.IP
+#WSUS
+Wait-VMResponse -VMName $WSUS.Name -CredentialType "Local" -Password $Password
+Write-Host $WSUS.Name "Networking and domain join" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $LocalCred -VMName $WSUS.Name -FilePath ".\WSUS.ps1"
+Start-Sleep -Seconds 30 #PSDirect will jump into a VM that's shutting down if we don't sleep between scripts
+Wait-VMResponse -VMName $WSUS.Name -CredentialType "Domain" -DomainNetBIOSName $DomainNetBIOSName -Password $Password
+Write-Host $WSUS.Name "post-install" -ForegroundColor Green -BackgroundColor Black
+Invoke-Command -Credential $DomainCred -VMName $WSUS.Name -FilePath ".\WSUS-PostInstall.ps1"
 
 #Configure BitLocker on all VMs
 .\Bitlocker.ps1
