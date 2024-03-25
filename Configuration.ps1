@@ -53,4 +53,4 @@ $CL07  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.57"}
 $CL08  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.58"}
 $CL09  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.59"}
 $CL10  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.60"}
-$VMConfigs = @($GW01, $DC01, $DC02, $DHCP, $FS01, $WEB01, $CL01, $CL02, $CL03, $CL04, $CL05, $CL06, $CL07, $CL08, $CL09, $CL10, $WSUS)
+$VMConfigs = @($GW01, $DC01, $DC02, $DHCP, $FS01, $WEB01, $CL01, $WSUS)
