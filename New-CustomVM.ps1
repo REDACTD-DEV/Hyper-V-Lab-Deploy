@@ -144,12 +144,12 @@ function New-CustomVM {
         
         #WSUS Pre-reqs ISO
         if ($VMName -eq "WSUS") {
-            Copy-Item -Path $UnattendFilePath -Destination "$VMConfigFolder\$VMName\WSUS.iso" -Force | Out-Null
+            Copy-Item -Path $UnattendFilePath -Destination "$VMConfigFolder\$VMName\WSUS-prereq.iso" -Force | Out-Null
             #Attach WSUS ISO to VM
             Write-Host "Attaching autounattend ISO to $VMName" -ForegroundColor Magenta -BackgroundColor Black
             $Params = @{
                 VMName = $VMName
-                Path = "$VMConfigFolder\$VMName\WSUS.iso"
+                Path = "$VMConfigFolder\$VMName\WSUS-prereq.iso"
             }
             Add-VMDvdDrive @Params | Out-Null
 
