@@ -157,7 +157,7 @@ function New-CustomVM {
 
         #Set boot priority
         Write-Host "Set boot priority for $VMName" -ForegroundColor Magenta -BackgroundColor Black
-        $Order1 = Get-VMDvdDrive -VMName $VMName | Where-Object Path  -NotMatch "unattend"
+        $Order1 = Get-VMDvdDrive -VMName $VMName | Where-Object Path  -NotMatch "unattend" | Where-Object Path  -NotMatch "WSUS"
         $Order2 = Get-VMHardDiskDrive -VMName $VMName | Where-Object Path -Match "OS.vhdx"
         $Order3 = Get-VMHardDiskDrive -VMName $VMName | Where-Object Path -Match "Data.vhdx"
         $Order4 = Get-VMDvdDrive -VMName $VMName | Where-Object Path  -Match "unattend"

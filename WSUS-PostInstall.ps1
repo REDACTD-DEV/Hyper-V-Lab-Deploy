@@ -218,7 +218,7 @@ if ($DefaultApproval -eq $True)
 write-host 'Configuring default automatic approval rule'
 [void][reflection.assembly]::LoadWithPartialName("Microsoft.UpdateServices.Administration")
 $rule = $wsus.GetInstallApprovalRules() | Where {
-    $_.Name -eq "Default Automatic Approval Rule"}
+    $_.Name -eq 'Default Automatic Approval Rule'}
 $class = $wsus.GetUpdateClassifications() | ? {$_.Title -In (
     'Critical Updates',
     'Definition Updates',
