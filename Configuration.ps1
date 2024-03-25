@@ -44,4 +44,13 @@ $DHCP  = [PSCustomObject]@{Name = "DHCP" ; Type = "Server"; IP= "192.168.10.13"}
 $FS01  = [PSCustomObject]@{Name = "FS01" ; Type = "Server"; IP= "192.168.10.14"}
 $WEB01 = [PSCustomObject]@{Name = "WEB01"; Type = "Server"; IP= "192.168.10.15"}
 $CL01  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.50"}
-$VMConfigs = @($GW01, $DC01, $DC02, $DHCP, $FS01, $WEB01, $CL01, $WSUS)
+$CL02  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.52"}
+$CL03  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.53"}
+$CL04  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.54"}
+$CL05  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.55"}
+$CL06  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.56"}
+$CL07  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.57"}
+$CL08  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.58"}
+$CL09  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.59"}
+$CL10  = [PSCustomObject]@{Name = "CL01" ; Type = "Client"; IP= "192.168.10.60"}
+$VMConfigs = @($GW01, $DC01, $DC02, $DHCP, $FS01, $WEB01, $CL01, $CL02, $CL03, $CL04, $CL05, $CL06, $CL07, $CL08, $CL09, $CL10, $WSUS)
