@@ -256,7 +256,7 @@ if (Test-Path $TempDir\ReportViewer.exe)
 {Remove-Item $TempDir\ReportViewer.exe -Force}
 if (Test-Path $TempDir\SQLEXPRWT_x64_ENU.exe)
 {Remove-Item $TempDir\SQLEXPRWT_x64_ENU.exe -Force}
-If ($Tempfolder -eq "No")
+If ($Tempfolder -eq 'No')
 {Remove-Item $TempDir -Force}
  
 write-host 'WSUS log files can be found here: %ProgramFiles%\Update Services\LogFiles'
