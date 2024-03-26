@@ -1,20 +1,20 @@
 Start-Sleep -Seconds 10
 #Bring data disk online
-Write-Host "Bring data disk online" -ForegroundColor Blue -BackgroundColor Black
+Write-Host 'Bring data disk online' -ForegroundColor Blue -BackgroundColor Black
 Initialize-Disk -Number 1 | Out-Null
 Start-Sleep -Seconds 10
 #Partition and format
-Write-Host "Partition and format" -ForegroundColor Blue -BackgroundColor Black
-New-Partition -DiskNumber 1 -UseMaximumSize | Format-Volume -FileSystem "NTFS" -NewFileSystemLabel "Data" | Out-Null
+Write-Host 'Partition and format' -ForegroundColor Blue -BackgroundColor Black
+New-Partition -DiskNumber 1 -UseMaximumSize | Format-Volume -FileSystem 'NTFS' -NewFileSystemLabel 'Data' | Out-Null
 
 Start-Sleep -Seconds 10#Set drive letter 
-Write-Host "Set drive letter" -ForegroundColor Blue -BackgroundColor Black
+Write-Host 'Set drive letter' -ForegroundColor Blue -BackgroundColor Black
 Set-Partition -DiskNumber 1 -PartitionNumber 2 -NewDriveLetter Z | Out-Null
 Start-Sleep -Seconds 10
 
-Write-Host "Create WSUS folders" -ForegroundColor Blue -BackgroundColor Black
-New-Item "Z:\WSUS_Updates" -Type Directory | Out-Null
-New-Item "Z:\Temp" -Type Directory | Out-Null
+Write-Host 'Create WSUS folders' -ForegroundColor Blue -BackgroundColor Black
+New-Item 'Z:\WSUS_Updates' -Type Directory | Out-Null
+New-Item 'Z:\Temp' -Type Directory | Out-Null
 
 ###############
 ## Variables ##
@@ -25,22 +25,22 @@ New-Item "Z:\Temp" -Type Directory | Out-Null
 # Do you want to install .NET FRAMEWORK 3.5? If true, provide a location for the Windows OS media in the next variable
     $DotNet = $True
 # Location of Windows sxs for .Net Framework 3.5 installation
-    $WindowsSXS = "D:\sources\sxs"
+    $WindowsSXS = 'D:\sources\sxs'
 # Do you want to download and install MS Report Viewer 2008 SP1 (required for WSUS Reports)?
     $RepViewer = $True
-# WSUS Installation Type.  Enter "WID" (for WIndows Internal Database), "SQLExpress" (to download and install a local SQLExpress), or "SQLRemote" (for an existing SQL Instance).
-    $WSUSType = "WID"
+# WSUS Installation Type.  Enter 'WID' (for WIndows Internal Database), 'SQLExpress' (to download and install a local SQLExpress), or 'SQLRemote' (for an existing SQL Instance).
+    $WSUSType = 'WID'
 # If using an existing SQL server, provide the Instance name below
-    $SQLInstance = "MyServer\MyInstance"
+    $SQLInstance = 'MyServer\MyInstance'
 # Location to store WSUS Updates (will be created if doesn't exist)
-    $WSUSDir = "Z:\WSUS_Updates"
+    $WSUSDir = 'Z:\WSUS_Updates'
 # Temporary location for installation files (will be created if doesn't exist)
-    $TempDir = "Z:\temp"
+    $TempDir = 'Z:\temp'
  
 ##//CONFIGURATION//##
  
 # Do you want to configure WSUS (equivalent of WSUS Configuration Wizard, plus some additional options)?  If $false, no further variables apply.
-# You can customise the configurations, such as Products and Classifications etc, in the "Begin Initial Configuration of WSUS" section of the script.
+# You can customise the configurations, such as Products and Classifications etc, in the 'Begin Initial Configuration of WSUS' section of the script.
     $ConfigureWSUS = $True
 # Do you want to decline some unwanted updates?
     $DeclineUpdates = $True
@@ -49,11 +49,11 @@ New-Item "Z:\Temp" -Type Directory | Out-Null
 # Do you want to run the Default Approval Rule after configuring?
     $RunDefaultRule = $False
 
-$InstallDrive = (get-volume | Where FileSystemLabel -match SSS_X64FREE_EN-US_DV9).DriveLetter + ":\sources\sxs"    
+$InstallDrive = (get-volume | Where FileSystemLabel -match SSS_X64FREE_EN-US_DV9).DriveLetter + ':\sources\sxs'    
 Install-WindowsFeature -name NET-Framework-Core -source $InstallDrive
 
 #Install SQLCLRTypes and Report Viewer from mounted ISO
-$WSUSDrive = (get-volume | Where-Object FileSystemLabel -eq WSUS).DriveLetter + ":\"
+$WSUSDrive = (get-volume | Where-Object FileSystemLabel -eq WSUS).DriveLetter + ':\'
 Set-Location $WSUSDrive
 msiexec.exe /i .\SQLSysClrTypes2012_x64.msi /quiet /log C:\Temp\SQLSysClrTypes2012_x64.log
 msiexec.exe /i .\ReportViewer.msi /quiet /log C:\Temp\ReportViewer.log
@@ -75,17 +75,17 @@ Install-WindowsFeature -Name UpdateServices-Services,UpdateServices-DB -IncludeM
  
 if ($WSUSType -eq 'WID')
 {
-sl "C:\Program Files\Update Services\Tools"
+sl 'C:\Program Files\Update Services\Tools'
 .\wsusutil.exe postinstall CONTENT_DIR=$WSUSDir
 }
 if ($WSUSType -eq 'SQLExpress')
 {
-sl "C:\Program Files\Update Services\Tools"
-.\wsusutil.exe postinstall SQL_INSTANCE_NAME="%COMPUTERNAME%\SQLEXPRESS" CONTENT_DIR=$WSUSDir
+sl 'C:\Program Files\Update Services\Tools'
+.\wsusutil.exe postinstall SQL_INSTANCE_NAME='%COMPUTERNAME%\SQLEXPRESS' CONTENT_DIR=$WSUSDir
 }
 if ($WSUSType -eq 'SQLRemote')
 {
-sl "C:\Program Files\Update Services\Tools"
+sl 'C:\Program Files\Update Services\Tools'
 .\wsusutil.exe postinstall SQL_INSTANCE_NAME=$SQLInstance CONTENT_DIR=$WSUSDir
 }
 
@@ -100,7 +100,7 @@ Set-WsusServerSynchronization –SyncFromMU
  
 # Set Update Languages to English and save configuration settings
 $wsusConfig.AllUpdateLanguagesEnabled = $false
-$wsusConfig.SetEnabledUpdateLanguages("en")
+$wsusConfig.SetEnabledUpdateLanguages('en')
 $wsusConfig.Save()
 
 # Get WSUS Subscription and perform initial synchronization to get latest categories
@@ -109,11 +109,11 @@ $subscription.StartSynchronizationForCategoryOnly()
 write-host 'Beginning first WSUS Sync to get available Products etc' -ForegroundColor Magenta
 write-host 'Will take some time to complete'
 While ($subscription.GetSynchronizationStatus() -ne 'NotProcessing') {
-    Write-Host "." -NoNewline
+    Write-Host '.' -NoNewline
     Start-Sleep -Seconds 5
 }
 write-host ' '
-Write-Host "Sync is done." -ForegroundColor Green
+Write-Host 'Sync is done.' -ForegroundColor Green
 
 Start-Sleep -Seconds 5
 
@@ -165,9 +165,9 @@ Start-Sleep -Seconds 60 # Wait for sync to start before monitoring
 while ($subscription.GetSynchronizationProgress().ProcessedItems -ne $subscription.GetSynchronizationProgress().TotalItems) {
     Write-Progress -PercentComplete (
     $subscription.GetSynchronizationProgress().ProcessedItems*100/($subscription.GetSynchronizationProgress().TotalItems)
-    ) -Activity "WSUS Sync Progress"
+    ) -Activity 'WSUS Sync Progress'
 }
-Write-Host "Sync is done." -ForegroundColor Green
+Write-Host 'Sync is done.' -ForegroundColor Green
 
 Start-Sleep -Seconds 5
 
@@ -184,7 +184,7 @@ $updateScope = New-Object Microsoft.UpdateServices.Administration.UpdateScope -P
     ApprovedStates = $approveState::Any
 }
 $wsus.GetUpdates($updateScope) | ForEach {
-    Write-Verbose ("Declining {0}" -f $_.Title) -Verbose
+    Write-Verbose ('Declining {0}' -f $_.Title) -Verbose
     $_.Decline()
 }
  
@@ -194,7 +194,7 @@ $updateScope = New-Object Microsoft.UpdateServices.Administration.UpdateScope -P
     ApprovedStates = $approveState::Any
 }
 $wsus.GetUpdates($updateScope) | ForEach {
-    Write-Verbose ("Declining {0}" -f $_.Title) -Verbose
+    Write-Verbose ('Declining {0}' -f $_.Title) -Verbose
     $_.Decline()
 }
  
@@ -204,7 +204,7 @@ $updateScope = New-Object Microsoft.UpdateServices.Administration.UpdateScope -P
     ApprovedStates = $approveState::Any
 }
 $wsus.GetUpdates($updateScope) | ForEach {
-    Write-Verbose ("Declining {0}" -f $_.Title) -Verbose
+    Write-Verbose ('Declining {0}' -f $_.Title) -Verbose
     $_.Decline()
 }
 }
