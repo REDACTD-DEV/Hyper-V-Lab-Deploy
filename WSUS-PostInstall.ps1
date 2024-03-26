@@ -216,7 +216,7 @@ Start-Sleep -Seconds 5
 if ($DefaultApproval -eq $True)
 {
 write-host 'Configuring default automatic approval rule'
-[void][reflection.assembly]::LoadWithPartialName("Microsoft.UpdateServices.Administration")
+[void][reflection.assembly]::LoadWithPartialName('Microsoft.UpdateServices.Administration')
 $rule = $wsus.GetInstallApprovalRules() | Where {
     $_.Name -eq 'Default Automatic Approval Rule'}
 $class = $wsus.GetUpdateClassifications() | ? {$_.Title -In (
